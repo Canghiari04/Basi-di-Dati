@@ -1,0 +1,164 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lipsum}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[margin=1in]{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+
+\titleformat{\section} 
+{\LARGE\bfseries}{\thesection}{1em}{}
+
+\titleformat{\subsection} 
+{\Large\bfseries}{\thesection}{1em}{}
+
+\begin{document}
+
+\pagestyle{empty}
+
+\section*{Linguaggio SQL} 
+\large
+Il \textit{modello relazionale} definisce i \textbf{concetti generali} e i \textbf{vincoli} per modellare e strutturare i dati di una certa applicazione.\ Tuttavia, tramite lo studio del solo modello relazionale, non sarebbe possibile costruire lo \textit{schema} del DB e manipolare le \textit{istanze} associate.
+Questa richiesta è soddisfatta tramite l'impiego di \textbf{linguaggi data-oriented}, i quali possono essere suddivisi in tre macro-categorie rispetto alla compatibilità o meno con un RDBMS, ossia:
+\begin{enumerate}
+    \renewcommand{\labelenumi}{-} 
+    \itemsep0em
+    \item \textit{Linguaggi rappresentativi tramite interfacce grafiche}
+    \item \textit{Linguaggi basati su proprietà algebrico/logiche}
+    \item \textit{Linguaggio SQL}
+\end{enumerate}
+Tra i tre citati senza alcun dubbio, in associazione ad un modello relazionale, \textbf{SQL} rappresenta il \textit{linguaggio di riferimento}.
+\subsection*{Introduzione}
+\large
+\textbf{SQL} è un linguaggio per la costruzione di modelli relazionali.\ Caratterizzato dagli stessi concetti generali su cui si fonda un qualsiasi \textit{modello relazionale}, ma pone alcune differenze, in riferimento:
+\begin{enumerate}
+    \renewcommand{\labelenumi}{-} 
+    \itemsep0em
+    \item La denominazione data alle \textit{relazioni} in questo contesto prende il nome di \textbf{tabelle}
+    \item Il risultato di un'operazione sui dati può restituire una tabella con \textbf{righe duplicate}
+    \item Il sistema dei \textbf{vincoli} è più \textbf{espressivo} o \textbf{informativo}
+    \item Il vincolo di \textbf{integrità referenziale}, ossia in relazione alla \textit{foreign key}, è \textbf{meno stringente}.\ Si ricordi la regola generale, la quale richiede che tra tabella referenziante e referenziata, le colonne che compongano la referenza siano corrispettivamente qualsiasi dominio per la prima relazione, ma che ricada esattamente sulla chiave primaria della seconda relazione; ciò rispetto ad una manipolazione di dati potrebbe aumentare di molto la complessità gestionale.
+\end{enumerate}
+La grande diffusione di SQL è dovuta da un duro lavoro di standardizzazione che ha portato ad innumerevoli versioni e modifiche del paradigma, impegno portato avanti sin dagli anni ottanta. Tuttavia ancora oggi, differenti pubblicazioni sono ancora lontane dall'essere comunemente adottate. Per questa ragione, spesso si fa riferimento a \textit{SQL-2}, il quale pone sottili caratteristiche legate alla sintattica del linguaggio.\vspace{14pt}\\
+SQL non è solamente adottato per esprimere interrogazioni rispetto alla base di dati di riferimento. Contiene infatti al suo interno funzionalità dedicate al \textbf{DDL}, \textit{Data Definition Language}, il quale permette la definizione dello \textit{schema} di una base di dati, e al \textbf{DML}, \textit{Data Manipolation Language}, ossia un insieme di comandi per la modifica e l'interrogazione delle istanze di una base di dati.
+
+\subsection*{Data Definition Language}
+\large
+La prima parte trattata riguarda le funzionalità adoperate per la definizione dello \textit{schema} della base di dati. Tramite il costrutto \textit{create database}, è possibile costruire uno \textbf{schema} di una base di dati, da non confondere con lo \textit{schema} di una tabella, ossia dall'insieme posto dal nome della relazione e degli attributi associati. I comandi dedicati sono:\vspace*{7pt}
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{create database [if not exists] nameDataBase}
+\end{itemize}
+implementato per la creazione del collettore successivo di \textit{tabelle}, \textit{viste} e \textit{interrogazioni} alle istanze di riferimento, e di seguito è riportato il corrispondente comando per l'eliminazione del database 
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{drop database [if exists] nameDataBase}
+\end{itemize}
+si osserva come in entrambe le funzioni siano descritti comportamenti \textit{opzionali}, dovuti dall'uso della parentesi quadrate \textit{[if not exists]} e \textit{[if exists]}, le quali permettono di verificare, in questo contesto, dell'esistenza o meno del DB indicato nella nomenclatura.\vspace*{14pt}\\
+Tramite il costrutto \textit{create table}, è possibile costruire una \textbf{tabella} all'interno dello \textit{schema} del DB. Il comando dedicato è:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{create table nameTable (}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=2cm]
+    \itemsep0em
+    \item \textit{nameAttribute1 Domain [ValDefault][Constraint]} 
+    \item \textit{nameAttribute2 Domain [ValDefault][Constraint]}
+    \item \textit{...} 
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=1cm] 
+    \item \textit{);}
+\end{itemize}
+nuovamente, tutto ciò che è circondato da parentesi quadrate indica un comportamento opzionale, ad eccezione del nome e del dominio dell'attributo specifico. In questo esempio la denominazione \textit{[ValDefault]} stabilisce quale sia la variabile di default associata all'istanza immessa qualora non sia specificato il valore, mentre \textit{[Constraint]} stabilisce un vincolo al quale un qualsiasi record immesso dovrà sottostare, di seguito verranno riportati i \textit{vincoli} principali.
+\subsection*{Domini elementari}
+\large
+In SQL possono essere associati differenti \textbf{domini elementari} agli attributi di uno schema; \textit{schema} inteso a livello di tabella, per cui l'insieme dettato dal nominativo della relazione e dal nome degli attributi.\vspace*{14pt}\\
+\textit{Character}\\Il dominio \textit{character} permette di rappresentare singoli caratteri oppure stringhe. La lunghezza di una stringa può essere sia fissa che variabile, nonostante in entrambi casi occorra specificare la lunghezza massima. La sintassi è:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{character [varying] [(Length)] [character set Language]}
+\end{itemize}
+quindi qualora si voglia inserire una stringa di 20 caratteri occorre specificare \textit{character (20)}, oppure in relazione ad una stringa con un massimo di 1000 caratteri, adottando uno specifico alfabeto occorre indicare \textit{character varying (1000) character set Greek}. Se la lunghezza non è specificata, il dominio dell'attributo indica un unico carattere. SQL ammette anche delle varianti compatte, spesso più utilizzate rispetto alle prime citate, le quali rispettivamente sono \textit{char} e \textit{varchar}, per stabilire una dimensione fissa piuttosto che una dimensione variabile.\vspace*{14pt}\\
+\textit{Tipi numerici esatti}\\Questa famiglia consente di rappresentare valori esatti, interi o con una parte decimale di lunghezza prefissata. SQL mette a disposizione differenti soluzioni, quali:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{numeric [(Precision [, Scale])]}
+    \item \textit{decimal [(Precision [, Scale])]}
+    \item \textit{integer}
+    \item \textit{smallint}
+\end{itemize}
+I domini \textit{numeric} e \textit{decimal} rappresentano numeri in base \textit{decimale}. Il parametro \textit{Precision} indica l'accurattezza del numero, mentre \textit{Scale} indica quante cifre sono dedicate alla parte frazionaria. Nei casi in cui non sia zona di interesse la rappresentazione della parte frazionaria, allora diventa possbile usare i domini predefiniti \textit{int} e \textit{smallint}. Rispetto a questi ultimi due formati è possibile combinare il campo \textit{auto increment}, mediante (\textit{integer auto increment}), consentendo di creare dei campi numerici che si auto-incrementano ad ogni nuovo inserimento nella tabella.\vspace*{14pt}\\
+\textit{Tipi numerici approssimati}\\I tipi \textbf{numerici approssimati} consentono di rappresentare valori reali con rappresentazione in virgola mobile. SQL fornisce i seguenti tipi:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{float [(Precision)]}
+    \item \textit{real}
+    \item \textit{doule precision}
+\end{itemize}
+I domini in questione permettono la rappresentazione di numeri approssimati mediante l'utilizzo di una virgola mobile, suddividendo il numero in una coppia di valori: la mantissa e l'esponente (\textit{0.17E16 --> 1,7$*$10$^{15}$, dove 1,7 indica la mantissa mentre 15 l'esponente}).\vspace*{14pt}\\
+\textit{Domini Temporali}\\I \textbf{domini temporali} consentono di rappresentare informazioni temporali, intervalli di tempo o istanti di tempo. SQL-2 mette a disposizione tre diverse forme:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{date}
+    \item \textit{time [(Precision)] [with time zone]}
+    \item \textit{timestamp [(Precision)] [with time zone]}
+\end{itemize} 
+Ciascuno di questi domini è strutturato e suddivisibile in un insieme di campi. Come ad esempio \textit{date} ammette i campi \textit{year}, \textit{month} e \textit{day}, il dominio \textit{time} ammette \textit{hour}, \textit{minute} e \textit{second}, infine \textit{timestamp} ammette tutti i campi, da \textit{year} a \textit{second}. Sia per \textit{time} che per \textit{timestamp} è possibile specificare una precisione, che rappresenta il numero di cifre decimali che si devono utilizzare nella rappresentazione delle frazioni di secondo.
+\subsection*{Vincoli intra-relazionali}
+\large
+Sia nella definizione dei domini che delle tabelle, possono essere definiti alcuni vincoli, ovvero delle proprietà che devono essere rispettate da ogni record della base di dati. Il costrutto più potente per specificare vincoli generici, è il costrutto \textit{check}, che richiede di formulare delle interrogazioni alla base di dati. I più semplici vincoli adottabili sono di tipo \textit{intra-relazionale}, quali \textit{not null}, \textit{unique} e \textit{primary key}.\vspace*{14pt}\\
+\textit{Not Null}\\Il valore \textit{NULL} è un particolare valore adottato in assenza di informazioni. Tuttavia il vincolo stabilito non ammette il valore \textit{nullo} come valore dell'attributo, quindi il dato dovrà essere sempre specificato, indipendentemente dall'istanza che si voglia inserire. Invece se l'attributo in questione è combinato rispetto ad un valore di \textit{default} diverso dal valore nullo, allora diventa possibile inserire l'istanza anche in assenza di specifica a livello di inserimento. Il vincolo è specificato attribuendo alla definizione dell'attributo la dichiarazione \textit{not null}, come segue:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{nameAttribute varchar(20) not null}
+\end{itemize}
+\textit{Unique}\\Il vincolo \textit{unique} impone che l'attributo o l'insieme di attributi su cui si applica non possa / possano avere duplicati, ossia stessi valori in istanze differenti, pertanto gli attributi in questione segueno regole definite dal concetto di \textit{superchiave}, per cui essi stessi sono delle superchiavi. Il vincolo può essere espresso in due sintassi, dove la prima delle due descrive:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{nameAttribute Domain [ValDefault] unique}
+\end{itemize}
+qualora la superchiave della relazione sia un unico attributo, oppure quando è composta da più attributi si adotta solitamente
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{unique(nameAttribute1, nameAttribute2, ...)}
+\end{itemize}
+concludendo, quest'ultima sintassi è riportata al termine del costrutto per la creazione della tabella. Tuttavia, le due sintassi non hanno la stessa valenza, poichè specificare il vincolo per ogni attributo piuttosto che raggruppare il tutto come la seconda sintassi non persegue nello stesso obiettivo. Infatti, rispettivamente, il primo citato indica che la specifica colonna non possa avere duplicati al suo interno, mentre la definizione \textit{unique(nameAttribute1, nameAttribute2, ...)} indica che l'insieme dei domini riportati per tutte le istanze seguenti non possano avere valori combinati duplicati.\vspace*{14pt}\\
+\textit{Primary key}\\Il vincolo \textit{primary key} può essere ugualmente posto come il vincolo \textit{unique}, ma con alcune differenze a livello di implementazione. Tale proprietà ammette che gli attributi associati non possano mai assumere il valore nullo, inoltre l'uso di questo vincolo può avvennire una sola volta, al contrario di unique e not null. In relazione a quanto detto, la sintassi del costrutto è:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{create table nameTable(}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=2cm]
+    \itemsep0em
+    \item \textit{nameAttribute1 Domain [ValDefault]}
+    \item \textit{nameAttribute2 Domain [ValDefault]}
+    \item \textit{primary key (nameAttribute1, nameAttribute2)}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{);}
+\end{itemize}
+\subsection*{Vincoli inter-relazionali}
+I vincoli inter-relazionali più diffusi sono i \textit{vincoli di integrità referenziale}. In SQL spesso sono denominati come \textit{vincoli} di \textit{foreign key}, ossia di \textit{chiave esterna}. Questa proprietà crea un collegamento tra una tabella \textit{referenziante} e una tabella \textit{referenziata}. Il vincolo impone che ogni riga che compare nella tabella referenziata di un attributo specificato, compaia anche nelle righe della tabella referenziante in un totale di attributi di simile dominio. L'unico requisito imposto richiede che l'attributo o l'insieme di attributi di riferimento, posti internamente alla tabella referenziata, siano soggetti al vincolo \textit{unique}, ovvero sia un identificatore della relazione. Il vincolo può essere posto sia come vincolo \textit{unique} oppure come vincolo \textit{primary key}. Per cui seguono due costrutti di differente sintassi:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{create table nameTable1(}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=2cm]
+    \itemsep0em
+    \item \textit{nameAttribute1 Domain [ValDefault] references nameTable2(nameAttribute1)}
+    \item \textit{nameAttribute2 Domain [ValDefault]}
+    \item \textit{primary key (nameAttribute1, nameAttribute2)}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{);}
+\end{itemize}
+dove si osserva la nuova semantica \textit{references} utilizzabile solo quando un singolo attributo risulta essere conivolto per la costruzione della referenza, mentre qualora sia composta da più di un singolo attributo si adotta
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{create table nameTable1(}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=2cm]
+    \itemsep0em
+    \item \textit{nameAttribute1 Domain [ValDefault] primary key}
+    \item \textit{nameAttribute2 Domain [ValDefault]}
+    \item \textit{foreign key (nameAttribute1) references nameTable2(nameAttribute1)}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{);}
+\end{itemize}
+uso del costrutto \textit{foreign key} per la costruzione è posto sempre al termine della definizione degli attributi, inoltre qualora siano specificati tra le parentesi un numero superiore di attributi per la referenza, SQL segue lo stesso ordine imposto sia per la tabella referenziante e sia per la tabella referenziata. 
+\end{document}

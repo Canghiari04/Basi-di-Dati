@@ -123,7 +123,6 @@ Quindi una tabella può essere osservata come un sottoinsieme del prodotto carte
 All'interno di una relazione, le \textbf{ennuple} di dati, ossia le differenti \textit{row}, devono essere omogenee fra loro.\ Tuttavia, in alcuni casi, l'\textit{attributo} associativo per una determinata \textit{ennupla} potrebbe non essere noto o addirittura inesistente.\vspace{14pt}\\
 Una soluzione consiste nel battezzare \textit{valori speciali}, ossia colmare informazioni mancanti. Un primo approccio è dato dalla creazione di valori speciali per ogni attributo oppure, molto più utilizzato, etichettare tutto ciò che sia mancante con il \textbf{valore NULL}.
 Il valore \textit{NULL} garantisce una netta soluzione per dati mancanti, tuttavia è buona pratica limitarne il numero, a causa dell'elevato spreco di memoria che potrebbe provocare. Nella progettazione di basi di dati esiste un \textit{trade-off} tra le tabelle e il valore NULL, ossia comporre ulteriori relazioni, differenziando in questo modo record che siano in grado o meno di compensare tutti i domini richiesti.
-\textbf{Potrebbe starci mettere un'altro esempio grafico}
 
 \subsection*{Vincoli di integrità}
 \large
@@ -158,7 +157,7 @@ Quindi l'uso di \textit{chiavi primarie} risulta essere la soluzione migliore, p
 Un modello relazionale è adottato soprattutto per garantire molte connessioni fra relazioni della stessa base di dati, collegamenti espressi mediante attributi di differenti tabelle dello stesso tipo.\ Per cui, potrebbe risultare utile porre delle \textbf{restrizioni} sulle \textit{dipendenze} tra relazioni.\vspace{14pt}\\
 \textit{Definizione informale}\\Ogni \textbf{riga} della tabella \textbf{referenziante} si collega al \textbf{massimo} ad un \textbf{riga} della tabella \textbf{referenziata}, sulla base di simili attributi scelti per porre un punto in comune.\vspace{14pt}\\
 Il \textbf{vincolo di integrità inter-relazionale} interviene proprio per determinare delle regole a cui sottostare.\vspace{14pt}\\
-\textit{Definizione informale}\\Un \textit{vincolo di integrità referenziale} fra gli attributi X di una relazion $R_1$ e una relazione $R_2$ impone ai valori, diversi da NULL per definizione, X di $R_1$ di comparire come valori della \textit{chiave primaria} di $R_2$.
+\textit{Definizione informale}\\Un \textit{vincolo di integrità referenziale} fra gli attributi X di una relazione $R_1$ e una relazione $R_2$ impone ai valori, diversi da NULL per definizione, X di $R_1$ di comparire come valori della \textit{chiave primaria} di $R_2$.
 \begin{center}
     \includegraphics[width = 0.7\textwidth]{foto 5.png}
 \end{center}
