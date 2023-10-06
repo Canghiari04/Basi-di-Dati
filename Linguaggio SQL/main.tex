@@ -72,9 +72,9 @@ Tramite il costrutto \textit{create table}, è possibile costruire una \textbf{t
 nuovamente, tutto ciò che è circondato da parentesi quadrate indica un comportamento opzionale, ad eccezione del nome e del dominio dell'attributo specifico. In questo esempio la denominazione \textit{[ValDefault]} stabilisce quale sia la variabile di default associata all'istanza immessa qualora non sia specificato il valore, mentre \textit{[Constraint]} stabilisce un vincolo al quale un qualsiasi record immesso dovrà sottostare, di seguito verranno riportati i \textit{vincoli} principali.
 \subsection*{Domini elementari}
 \large
-In SQL possono essere associati differenti \textbf{domini elementari} agli attributi di uno schema; \textit{schema} inteso a livello di tabella, per cui l'insieme dettato dal nominativo della relazione e dal nome degli attributi.\vspace*{14pt}\\
+In SQL possono essere associati differenti \textbf{domini elementari} agli attributi di uno schema; \textit{schema} inteso a livello di tabella, per cui l'insieme dettato dal nominativo della relazione e dal nome degli attributi.
 \textit{Character}\\Il dominio \textit{character} permette di rappresentare singoli caratteri oppure stringhe. La lunghezza di una stringa può essere sia fissa che variabile, nonostante in entrambi casi occorra specificare la lunghezza massima. La sintassi è:
-\begin{itemize}[label={ }, leftmargin=1cm]
+\begin{itemize}[label={ }, leftmargin=1cm] 
     \item \textit{character [varying] [(Length)] [character set Language]}
 \end{itemize}
 quindi qualora si voglia inserire una stringa di 20 caratteri occorre specificare \textit{character (20)}, oppure in relazione ad una stringa con un massimo di 1000 caratteri, adottando uno specifico alfabeto occorre indicare \textit{character varying (1000) character set Greek}. Se la lunghezza non è specificata, il dominio dell'attributo indica un unico carattere. SQL ammette anche delle varianti compatte, spesso più utilizzate rispetto alle prime citate, le quali rispettivamente sono \textit{char} e \textit{varchar}, per stabilire una dimensione fissa piuttosto che una dimensione variabile.\vspace*{14pt}\\
@@ -86,7 +86,11 @@ quindi qualora si voglia inserire una stringa di 20 caratteri occorre specificar
     \item \textit{integer}
     \item \textit{smallint}
 \end{itemize}
-I domini \textit{numeric} e \textit{decimal} rappresentano numeri in base \textit{decimale}. Il parametro \textit{Precision} indica l'accurattezza del numero, mentre \textit{Scale} indica quante cifre sono dedicate alla parte frazionaria. Nei casi in cui non sia zona di interesse la rappresentazione della parte frazionaria, allora diventa possbile usare i domini predefiniti \textit{int} e \textit{smallint}. Rispetto a questi ultimi due formati è possibile combinare il campo \textit{auto increment}, mediante (\textit{integer auto increment}), consentendo di creare dei campi numerici che si auto-incrementano ad ogni nuovo inserimento nella tabella.\vspace*{14pt}\\
+I domini \textit{numeric} e \textit{decimal} rappresentano numeri in base \textit{decimale}. Il parametro \textit{Precision} indica l'accurattezza del numero, mentre \textit{Scale} indica quante cifre sono dedicate alla parte frazionaria.
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{numeric (4, 2) : Intervallo[-99.99 : 99.99]} 
+\end{itemize}
+Nei casi in cui non sia zona di interesse la rappresentazione della parte frazionaria, allora diventa possibile usare i domini predefiniti \textit{int} e \textit{smallint}. Rispetto a questi ultimi due formati è possibile combinare il campo \textit{auto$-$increment}, mediante (\textit{integer auto$-$increment}), consentendo di creare dei campi numerici che si auto-incrementano ad ogni nuovo inserimento nella tabella.\vspace*{14pt}\\
 \textit{Tipi numerici approssimati}\\I tipi \textbf{numerici approssimati} consentono di rappresentare valori reali con rappresentazione in virgola mobile. SQL fornisce i seguenti tipi:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \itemsep0em
@@ -102,10 +106,31 @@ I domini in questione permettono la rappresentazione di numeri approssimati medi
     \item \textit{time [(Precision)] [with time zone]}
     \item \textit{timestamp [(Precision)] [with time zone]}
 \end{itemize} 
-Ciascuno di questi domini è strutturato e suddivisibile in un insieme di campi. Come ad esempio \textit{date} ammette i campi \textit{year}, \textit{month} e \textit{day}, il dominio \textit{time} ammette \textit{hour}, \textit{minute} e \textit{second}, infine \textit{timestamp} ammette tutti i campi, da \textit{year} a \textit{second}. Sia per \textit{time} che per \textit{timestamp} è possibile specificare una precisione, che rappresenta il numero di cifre decimali che si devono utilizzare nella rappresentazione delle frazioni di secondo.
+Ciascuno di questi domini è strutturato e suddivisibile in un insieme di campi. Come ad esempio \textit{date} ammette i campi \textit{year}, \textit{month} e \textit{day}, il dominio \textit{time} ammette \textit{hour}, \textit{minute} e \textit{second}, infine \textit{timestamp} ammette tutti i campi, da \textit{year} a \textit{second}. Sia per \textit{time} che per \textit{timestamp} è possibile specificare una precisione, che rappresenta il numero di cifre decimali che si devono utilizzare nella rappresentazione delle frazioni di secondo.\vspace*{14pt}\\
+\textit{Domini elementari}\\ I \textbf{domini elementari blob} e \textbf{cblob} consentono di rappresentare oggetti di grandi dimensioni come sequenza di valori binari o di caratteri. La \textit{dimensione massima} del file dipende dalla specifiche implementazioni del linguaggio SQL. Tuttavia tramite tale formato non è possibile specificare interrogazioni sui record accomunati da tale attributo.\vspace*{14pt}\\
+Tramite il costrutto \textbf{domain} è possibile costruire il proprio \textbf{dominio di dati} a partire dai domini elementari. La sintassi risulta essere cosi descritta:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{create domain NameDomain as TypeDate}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=2cm]
+    \itemsep0em
+    \item \textit{[Default value]}
+    \item \textit{[Constraint]}
+\end{itemize}
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{create domain NameDomain as TypeDate Default (27)}  
+\end{itemize}
+inoltre rispetto a quanto detto, è possibile specificare un \textbf{valore di default} attraverso il costrutto \textit{default}, ossia
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{default [value | user | null]}
+\end{itemize}
 \subsection*{Vincoli intra-relazionali}
 \large
-Sia nella definizione dei domini che delle tabelle, possono essere definiti alcuni vincoli, ovvero delle proprietà che devono essere rispettate da ogni record della base di dati. Il costrutto più potente per specificare vincoli generici, è il costrutto \textit{check}, che richiede di formulare delle interrogazioni alla base di dati. I più semplici vincoli adottabili sono di tipo \textit{intra-relazionale}, quali \textit{not null}, \textit{unique} e \textit{primary key}.\vspace*{14pt}\\
+Sia nella definizione dei domini che delle tabelle, possono essere definiti alcuni vincoli, ovvero delle proprietà che devono essere rispettate da ogni record della base di dati. Il costrutto più potente per specificare vincoli generici, è il costrutto \textit{check}, che richiede di formulare delle interrogazioni alla base di dati.
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{nameAttribute smallint check((attribute >= number1) and (attribute <= number2))}
+\end{itemize}
+vincolo applicato per ogni \textit{ennupla}. I più semplici vincoli adottabili sono di tipo \textit{intra-relazionale}, quali \textit{not null}, \textit{unique} e \textit{primary key}.\vspace*{14pt}\\
 \textit{Not Null}\\Il valore \textit{NULL} è un particolare valore adottato in assenza di informazioni. Tuttavia il vincolo stabilito non ammette il valore \textit{nullo} come valore dell'attributo, quindi il dato dovrà essere sempre specificato, indipendentemente dall'istanza che si voglia inserire. Invece se l'attributo in questione è combinato rispetto ad un valore di \textit{default} diverso dal valore nullo, allora diventa possibile inserire l'istanza anche in assenza di specifica a livello di inserimento. Il vincolo è specificato attribuendo alla definizione dell'attributo la dichiarazione \textit{not null}, come segue:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \itemsep0em
@@ -147,7 +172,7 @@ I vincoli inter-relazionali più diffusi sono i \textit{vincoli di integrità re
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{);}
 \end{itemize}
-dove si osserva la nuova semantica \textit{references} utilizzabile solo quando un singolo attributo risulta essere conivolto per la costruzione della referenza, mentre qualora sia composta da più di un singolo attributo si adotta
+dove si osserva la nuova semantica \textit{references} utilizzabile solo quando un singolo attributo risulta essere coinvolto per la costruzione della referenza, mentre qualora sia composta da più di un singolo attributo si adotta
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{create table nameTable1(}
 \end{itemize}
