@@ -51,7 +51,7 @@ La prima parte trattata riguarda le funzionalità adoperate per la definizione d
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{create database [if not exists] nameDataBase}
 \end{itemize}
-implementato per la creazione del collettore successivo di \textit{tabelle}, \textit{viste} e \textit{interrogazioni} alle istanze di riferimento, e di seguito è riportato il corrispondente comando per l'eliminazione del database 
+implementato per la creazione del collettore successivo di \textit{tabelle}, \textit{viste} e \textit{interrogazioni} alle istanze di riferimento, e di seguito è riportato il corrispondente comando per l'eliminazione del database:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{drop database [if exists] nameDataBase}
 \end{itemize}
@@ -120,7 +120,7 @@ Tramite il costrutto \textbf{domain} è possibile costruire il proprio \textbf{d
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{create domain NameDomain as TypeDate Default (27)}  
 \end{itemize}
-inoltre rispetto a quanto detto, è possibile specificare un \textbf{valore di default} attraverso il costrutto \textit{default}, ossia
+inoltre rispetto a quanto detto, è possibile specificare un \textbf{valore di default} attraverso il costrutto \textit{default}, ossia:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{default [value | user | null]}
 \end{itemize}
@@ -136,11 +136,11 @@ vincolo applicato per ogni \textit{ennupla}. I più semplici vincoli adottabili 
     \itemsep0em
     \item \textit{nameAttribute varchar(20) not null}
 \end{itemize}
-\textit{Unique}\\Il vincolo \textit{unique} impone che l'attributo o l'insieme di attributi su cui si applica non possa / possano avere duplicati, ossia stessi valori in istanze differenti, pertanto gli attributi in questione segueno regole definite dal concetto di \textit{superchiave}, per cui essi stessi sono delle superchiavi. Il vincolo può essere espresso in due sintassi, dove la prima delle due descrive:
+\textit{Unique}\\Il vincolo \textit{unique} impone che l'attributo o l'insieme di attributi su cui si applica non possa/possano avere duplicati, ossia stessi valori in istanze differenti, pertanto gli attributi in questione segueno regole definite dal concetto di \textit{superchiave}, per cui essi stessi sono delle superchiavi. Il vincolo può essere espresso in due sintassi, dove la prima delle due descrive:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{nameAttribute Domain [ValDefault] unique}
 \end{itemize}
-qualora la superchiave della relazione sia un unico attributo, oppure quando è composta da più attributi si adotta solitamente
+qualora la superchiave della relazione sia un unico attributo, oppure quando è composta da più attributi si adotta solitamente:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{unique(nameAttribute1, nameAttribute2, ...)}
 \end{itemize}
@@ -172,7 +172,7 @@ I vincoli inter-relazionali più diffusi sono i \textit{vincoli di integrità re
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{);}
 \end{itemize}
-dove si osserva la nuova semantica \textit{references} utilizzabile solo quando un singolo attributo risulta essere coinvolto per la costruzione della referenza, mentre qualora sia composta da più di un singolo attributo si adotta
+dove si osserva la nuova semantica \textit{references} utilizzabile solo quando un singolo attributo risulta essere coinvolto per la costruzione della referenza, mentre qualora sia composta da più di un singolo attributo si adotta:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{create table nameTable1(}
 \end{itemize}
@@ -185,5 +185,236 @@ dove si osserva la nuova semantica \textit{references} utilizzabile solo quando 
 \begin{itemize}[label={ }, leftmargin=1cm]
     \item \textit{);}
 \end{itemize}
-uso del costrutto \textit{foreign key} per la costruzione è posto sempre al termine della definizione degli attributi, inoltre qualora siano specificati tra le parentesi un numero superiore di attributi per la referenza, SQL segue lo stesso ordine imposto sia per la tabella referenziante e sia per la tabella referenziata.
+uso del costrutto \textit{foreign key} per la costruzione è posto sempre al termine della definizione degli attributi, inoltre qualora siano specificati tra le parentesi un numero superiore di attributi per la referenza, SQL segue lo stesso ordine imposto sia per la tabella referenziante e sia per la tabella referenziata.\vspace{14pt}\\
+Tuttavia la modifica o l'eliminazione di un valore della tabella referenziante, potrebbe causare l'invalidità del \textit{vincolo di integrità referenziale} per la relazione referenziata. In queste casistiche, spesso si adottano degli strumenti associativi alla tabella referenziata per monitorare violazioni della \textit{foreign key}, gestiti mediante lo stesso costrutto \textit{on}, il quale è definito come:
+\begin{itemize} [label={ }, leftmargin=1cm]
+    \item \textit{on (delete | update) (cascade | set null | set default | no action)}
+\end{itemize}
+per cui, tramite la sintassi introdotta, si evince la possibilità di poter manipolare violazioni del vincolo a causa di variazioni sui domini che compongono la \textit{foreign key}. Generalmente, qualora si dovessero verificare azioni di modifica e cancellazione, saranno imposte anche alle colonne che compongano la referenza tra le tabelle in questione.\\
+Successivamente alla sintassi \textit{(delete | update)} sono collocati ulteriori strutture intercambiabili, le quali illustrano il comportamento consecutivo all'azione imposta che si ingiunge sui domini interessati.
+
+\subsection*{Data Manipulation Language}
+\large
+La seconda parte trattata riguarda funzionalità adoperate per modificare e interrogare la base di dati. In una qualsiasi applicazione data, si cerca di emulare le quattro funzionalità CRUD, ossia \textit{create}, \textit{read}, \textit{update} e \textit{delete}. Per rispondere alla necessità dell'\textit{operazioni di lettura}, o meglio definite di \textit{interrogazione}, è utilizzato un singolare costrutto, così attuato:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{Select nameAttribute1, ..., nameAttributeN}
+    \item \textit{From nameTable1, ..., nameTableM}
+    \item \textit{Where Condition}
+\end{itemize} 
+a livello di operatività, si effettua il \textit{prodotto cartesiano} delle tabelle prese in considerazione, da cui verranno estratte le \textit{righe} che rispettino la \textit{condizione} posta nell'ultimo blocco sintattico. Di quest'ultime saranno prelevate solo le \textit{colonne} corrispondenti alla selezione posta in primo piano.\vspace*{14pt}\\
+Prima di poter distinguere le differenti azioni conseguibili attraverso le \textit{query}, occorre definire al meglio quale sia l'approccio di ogni \textit{blocco sintattico}, con l'obiettivo di illustrare operatori che possano approcciarsi al problema posto dinanzi.\vspace*{14pt}\\
+\textit{Select}\\
+La clausola \textbf{Select} specifica quali \textit{colonne} debbano essere prese in considerazione per poter produrre il risultato voluto. Per cui, differentemente rispetto a \textit{From} e \textit{Where}, opera solamente a livello di \textit{domini}, senza considerare le \textit{righe} della tabella.
+Spesso, tale sintassi, è accomunata da un discreto livello di \textit{ambiguità}; ossia, possono essere prese in considerazioni tabelle che costituiscano il risultato voluto, le cui colonne hanno nominativi simili. Per ovviare a tale problematica, è attuato un certo costrutto definito, \textit{As}. Questo strumento permette di ridenominare i \textit{domini} selezionati dalla \textit{query}, come segue:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \item \textit{Select nameAttribute As Name}
+\end{itemize} 
+\textit{From}\\
+La clausola \textbf{From} illustra l'insieme di tabelle che dovranno essere interrogate, pur di ottenere il risultato voluto. La molteplicità di \textit{relazioni} al suo interno permette di descrivere query sempre più avanzate e articolate, adeguandosi rispetto al \textit{prodotto cartesiano}. Come avviene per il costrutto \textit{Select}, è possibile utilizzare \textit{As} affinchè si possano ridenominare le tabelle appartenenti all'insieme di interesse. Ciò avviene per imporre una distinzione referenziale rispetto ai \textit{domini} adoperati.\vspace*{14pt}\\
+\textit{Where}\\
+La clausola \textbf{Where} indica quali \textit{righe} delle tabelle considerate, debbano comparire nel risultato richiesto. All'interno della \textit{condition} sono poste molteplici espressioni, le quali coinvolgono differenti settori, quali:
+\begin{itemize}[label={-}, leftmargin=1cm]
+    \itemsep0em
+    \item Operatori booelani, come \textit{And}, \textit{Or} e \textit{Not}, dove il loro utilizzo è simile a quanto adottato in linguaggi di programmazione
+    \item Operatori di confronto, i quali avvengono tramite il costrutto \textit{Like}, implementato principalmente per comparare variabili di tipo stringa
+    \item Operatori di insiemistica, un esempio è dato dallo strumento \textit{Between} che permette, come da denominazione, di verificare se un dato, di tipo numerico, appartenga ad un certo intervallo
+\end{itemize}
+L'insieme dei termini sintattici da poco descritti, permette la costruzione di \textit{espressisoni regolari}. Un'\textit{espressione regolare} è definita come una sequenza di simboli che identifica univocamente un \textit{insieme di stringhe}.\vspace*{14pt}\\
+Una nota di interesse ricade nella considerazione di \textit{valori speciali}, come \textit{NULL}, i quali possono comparire nel blocco sintattico \textit{Where}. Valorizzando una query simile a quanto visto fino ad ora, immetendo il valore \textit{NULL} come se fosse un \textit{dominio elementare}, non permetterebbe la loro inclusione nel risultato finale. Per cui sono implementati operatori designati per questo specifico dato. Si basano sulla \textit{logica a tre fattori}, idealizzata per comprendere \textit{connettori booleani}, distinti in:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Where nameAttribute NOT NULL}
+    \item \textit{Where nameAttribute IS NOT NULL}
+\end{itemize} 
+\textit{Join}\\
+Come già accennato, il \textit{costrutto} generale adottato per \textit{interrogare} la base di dati può comprendere un numero crescente di \textit{relazioni}. In certi contesti, pur di poter risalire ad un dato ricercato, occorre combinare valori appartenenti a tabelle differenti. Si riscontra solitamente una sintassi di tale ordine:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select nameAttribute As name}
+    \item \textit{From nameTable1, nameTable2}
+    \item \textit{Where (primaryKeyTable1 = foreignKeyTable2) And Condition}
+\end{itemize} 
+E' bene soffermarsi sul processo esecutivo di una query simile, poichè sono presenti passaggi atomici che contraddistinguono la totalità di codice scritto in SQL, i quali possono essere riassunti come di seguito:
+\begin{itemize}[label={-}, leftmargin=1cm]
+    \itemsep0em
+    \item Si effettua il \textit{prodotto cartesiano} delle tabelle, ossia l'insieme delle tuple ordinate appartenenti a tutte le relazioni in questione, generandone una comprendente tutti i domini
+    \item Si seleziona l'insieme di righe che abbiano valori comuni e che rispettino la condizione  posta nel costrutto \textit{Where}
+    \item Si seleziona il dominio specificato inizialmente nel primo costrutto sintattico
+    \item Concludendo, stabiliti i passaggi, si articolano fra loro pur di ottenere il risultato finale 
+\end{itemize}
+\textit{Notazioni aggiuntive}\\
+Una query in genere, se non imposto, non attua filtri a livello di ricerca. Per cui la costruzione di un'interrogazione potrebbe produrre come risultato finale una moltitudine di \textit{rows duplicate}, le quali non favoriscono quanto richiesto. Una soluzione prevede l'uso di costrutti specifici, articolati nella prima parte sintattica del codice SQL. I quali, brevemente, sono posti come segue:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select distinct(nameAttribute1), ..., nameAttributeN}
+\end{itemize}
+ciò consente di rimuovere tutti i duplicati, che abbiano medesima valorizzazione rispetto ai domini presi in considerazione, all'interno del risultato.\vspace*{14pt}\\
+Dato un approccio che mitiga su un certo rigore, un'altra espressione che opera sullo stesso layer è data da:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Where condition}
+    \item \textit{Order by nameAttribute1, ..., nameAttributeN}
+\end{itemize}
+\textit{Order by} permette di imporre un criterio d'ordine rispetto agli attributi che formulano i domini selezionati; si evince che la massima utilità del costrutto avviene qualora le colonne interessate siano \textit{domini elementari} di carattere \textit{numerico}.\vspace*{7pt}\\
+\textbf{Esempi particolari}\\
+...
+
+\subsection*{Operatori}
+\large
+\textit{Operatori aggregati}\\
+Gli \textbf{operatori aggregati} sono costrutti applicati ad insiemi di \textit{tuple} e producono un unico risultato. SQL impone che siano inseriti all'interno della sintassi della \textit{Select}, per cui valutati dopo aver applicato le clausola del \textit{Where} e del \textit{From}.\vspace*{14pt}\\
+Sono adoperati differenti tipologie di \textit{esecutori}, i quali si suddividono in:\\
+\textbf{Trovare qualcosa sul libro ...}
+\begin{itemize}[label={-}, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Count}, permette di contare il numero di righe della relazione ottenuta, mediante non solo alla selezione dei domini, ma anche in relazione alla condizione verificata e alle tabelle che compongano il prodotto cartesiano
+    \item \textit{Max}, restituisce il massimo della colonna selezionata
+    \item \textit{Sum}, restituisce la somma della colonna selezionata
+    \item \textit{Min}, restituisce il minimo della colonna selezionata
+    \item \textit{Avg}, restituisce la media della colonna selezionata
+\end{itemize}
+Tra gli esecutori elencati vige una diversificazione rispetto al loro utilizzo all'interno della clausola primaria. Tuttavia, la sintassi generale per poter usufruire delle caratteristiche descritte risulta:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select Operation(nameAttribute)}
+    \item \textit{From nameTable}
+    \item \textit{Where Condition}
+\end{itemize}
+Posta la sintassi generale, la diversificazione si nota dalla costruzione dell'interrogazione, dove si illustrano due tematiche principali:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select Count(* | nameAttribute | nameAttribute1, ..., nameAttributeN)}
+    \item \textit{From nameTable}
+    \item \textit{Where Condition}
+    \item 
+    \item \textit{Select Avg(nameAttribute)}
+    \item \textit{From nameTable}
+    \item \textit{Where Condition}
+\end{itemize} 
+da cui si nota che la caratteristica fondamentale che non eguaglia le due entità avviene all'interno della clausola \textit{Select}. Infatti l'operatore \textit{Count} garantisce un'esecuzione su insieme di possibili domini, si noti la presenza del carattere speciale (*); mentre esecutori come \textit{Avg} sono adottati nei confronti di una singola colonna. E' bene sottolineare come questa sottile discrepanza non incida sul processo esecutivo delle query introdotto e illustrato fino ad ora.\vspace*{14pt}\\
+Anche in questo caso è bene soffermarsi sul processo esecutivo che caratterizza query simili:
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item Si considerano tutte le tabelle selezionate dalla clausola \textit{From}, prestando attenzione a rimuovere ogni ambiguità
+    \item Si effettua il \textit{prodotto cartesiano} delle relazioni, generandone una comprendente tutti i domini del caso
+    \item Si seleziona l'insieme di righe che rispettino la condizione del costrutto \textit{Where}
+    \item Si considerano i domini posti all'interno della \textit{Select}, a cui si applica l'\textit{operatore aggregato} sulla colonna richiesta
+    \item Concludendo, stabiliti i passaggi, si articolano fra loro ottenendo una relazione comprendente una sola colonna e riga
+\end{itemize}
+\textit{Group by}\\
+Un \textit{operatore aggregato} restituisce un solo valore, come indicato dal processo esecutivo. Tuttavia, in alcuni contesti, potrebbe essere richiesto di formulare espressioni che riescano a combinare \textit{esecutori} rispetto ad un numero crescente di \textit{record}. Ciò è garantito da un costrutto specializzato, il quale accorda l'univocità degli operatori aggregati rispetto alla selezione multipla della \textit{Select}.\vspace*{14pt}\\
+Per aggregare i due approcci, si adottano \textbf{operatori di raggruppamento}, che consentono di dividere la tabella in \textit{gruppi}, ognuna caratterizzata da un valore comune dell'attributo specificato nell'operatore. La sintassi si dimostra come segue:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select nameAttribute1, ..., nameAttributeN}
+    \item \textit{From nameTable1, ..., nameTableM}
+    \item \textit{Where Condition}
+    \item \textit{Group by nameAttribute1, ..., nameAttributeM}
+\end{itemize}
+una nota di interesse avviene nei confronti delle liste attuate nei construtti \textit{Select} e \textit{Group by}, in cui i domini della prima sintassi devono essere un sottoinsieme dei domini dell'\textit{operatore di aggregazione}, poichè un \textit{gruppo} produce una singola riga nel risultato finale. \textbf{Trovare spiegazione più esaustiva}.\vspace*{14pt}\\
+\textit{Having}\\
+La sintassi \textbf{Having} permette di applicare un \textit{filtro di ricerca} rispetto all'aggregazione precedente del costrutto \textit{Group by}. L'\textit{operatore di ricerca} è posto al termine delle query, da cui ne deriva:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select nameAttribute1, ..., nameAttributeN}
+    \item \textit{From nameTable1, ..., nameTableM}
+    \item \textit{Where Condition}
+    \item \textit{Group by nameAttribute1, ..., nameAttributeM}
+    \item \textit{Having Condition}
+\end{itemize}
+dove ciò che differenzia l'ultima condizione posta, rispetto alla precedente, consiste sull'entità su cui è applicata. \textit{Where} valuta per ogni \textit{row} che sia parte della selezione dei domini, mentre \textit{Having} è valutata su ogni gruppo, per cui non restituisce singoli elementi ma un insieme oppure un sottoinsieme di elementi.\vspace*{14pt}\\
+Nuovamente, il processo esecutivo subisce delle modifiche rispetto ai nuovi costrutti introdotti:
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item Si effettua il \textit{prodotto cartesiano} delle tabelle, generandone una comprendente tutti i domini del caso
+    \item Si estraggono l'insieme di righe che rispettino la condizione del costrutto \textit{Where}
+    \item Avviene il partizionamento della tabella, rispetto alla funzionalità imposte
+    \item Si selezionano i gruppi, i quali sono rappresentativi di sottoinsiemi di interesse
+    \item Si estraggono i domini della selezione, a cui saranno successivi gli \textit{operatori aggregati} sui gruppi modellati, componendo il risultato richiesto
+\end{itemize}
+\textit{Operatori insiemistici}\\
+SQL mette a disposizione, oltre ad \textit{operatori aggregati} e \textit{operatori di raggruppamento}, esecutori affini alla logica insiemistica. Gli \textbf{operatori insiemistici} sono adoperati affinchè attività basilari appartenenti alla teoria degli insiemi, possano essere utilizzate anche tra colonne di differenti tabelle. Le operazioni effettuabili, immesse all'interno della clausola \textit{Select}, sono: 
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item \textit{Union}, come da denominazione rappresenta l'unione di domini, rispetto alla totalità di tabelle prese in considerazione dalla clausola \textit{From}
+    \item \textit{Intersect}, rappresentativa dell'\textit{intersezione}, per cui il risultato consiste in tutte quelle colonne che abbiano valori comuni
+    \item \textit{Except}, individua l'\textit{eccezione}, ossia la sottrazione tra insiemi
+\end{itemize}
+\textbf{Esempi particolari}\\
+...
+
+\subsection*{Join}
+\large
+Fino ad ora l'operatore \textit{join}, il quale permette di ricavare una tabella comprendente un insieme di domini appartenenti a relazioni differenti fra loro, è stato utilizzato all'interno della clausola \textit{Where} affinchè sia rispettata la condizione del \textit{vincolo inter-relazionale}. Tuttavia spesso si fa uso di un'ulteriore metodologia, del tutto equivalente rispetto a quella descritta precedentemente. Si tratta dell'esecutore \textbf{Inner Join}, manifestato all'interno della clausola \textit{From}. La sintassi esplicativa è definita come segue:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select nameAttribute}
+    \item \textit{From nameTable1 Join nameTable2 On primaryKeyTable1 = foreignKeyTable2}
+    \item \textit{Where Condition}
+\end{itemize} 
+Si osserva quale sia la differenza principale che contraddistingue le due sintassi, ossia l'unione delle relazioni interessate è anticipata rispetto alla corrisposta. Nell'esempio sono riportate le colonne che costituiscano il \textit{vincolo inter-relazionale}, le quali sono indicativamente di denominazione differente, tuttavia per ovviare ad ambiguità è obbligatorio formulare il costrutto \textit{nameTable.nameAttribute}.\vspace*{14pt}\\
+Concludendo esistono tre varianti dell'operatore, anche se poco utilizzate, le quali approcciano ad unioni di tabelle in maniera singolare. Brevemente esse sono suddivise in:
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item \textit{Left Join}, pone il risultato dell'\textit{Inner Join} in combinazione con le righe della \textit{tabella di sinistra}, che non hanno un corrispettivo a destra
+    \item \textit{Right Join}, pone il risultato dell'\textit{Inner Join} in combinazione con le righe della \textit{tabella di destra}, che non hanno un corrispettivo a sinistra
+    \item \textit{Full Join}, pone il risultato dell'\textit{Inner Join} in combinazione con le righe della \textit{tabella di sinistra/destra}, che non hanno un corrispettivo
+\end{itemize}
+\textbf{Esempi particolari}\\
+... 
+
+\subsection*{Query annidate}
+\large
+Le query illustrate rappresentano un livello di complessità piuttosto basilare, in grado di rispondere ad un breve insieme di interrogazioni alla base di dati. Tramite la clausola del \textit{Where} possono essere articolate \textit{espressioni complesse}, in cui valori appartenenti a domini sono confrontati con il risultato derivato da un'ulteriore \textbf{query annidata}.\\
+La sintassi adeguata risulta:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Select nameAttribute}
+    \item \textit{From nameTable}
+    \item \textit{Where Condition (Select ... From ... Where ...)}
+\end{itemize}
+Il costrutto indica due \textit{query annidate}, in cui insiemi o singoli valori possono essere confrontati con una \textit{query interna}, la quale potenzialmente potrebbe consistere in una relazione.\vspace*{14pt}\\
+Una \textit{query annidata} si suddivide in due entità, dove l'interrogazione compresa nella clausola \textit{Where} è definita \textbf{query interna} mentre quella posta esternamente è chiamata \textbf{query esterna}. Come citato poco fa, la \textit{query interna} è in grado di restituire singoli elementi oppure insiemi di elementi. In caso si dovesse verificare la seconda effettività, non sarebbe possibile utilizzare \textit{operatori di confronto} adoperati sino a ora. Per ovviare alla problematica, SQL mette a disposizione \textbf{operatori speciali di confronto}, i quali coinvolgono medesimi meccanismi di funzionamento di operatori basilari, distinti in:
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item \textit{All}, restituisce il risultato voluto se e solo se il confronto tra il valore del dominio e \textit{tutti} i valori della query interna soddisfino la condizione
+    \item \textit{Any}, restituisce il risultato voluto se e solo se il confronto tra il valore del dominio e \textit{almeno} uno dei valori della query interna soddisfino la condizione
+    \item \textit{Exists}, restituisce il risultato voluto se e solo se il confronto della query annidata fornisce un \textit{insieme non vuoto}, comprendente almeno un valore
+    \item \textit{In}, restituisce il risultato voluto se e solo se un \textit{certo valore} è contenuto nel risultato della query interna
+\end{itemize}
+Terminando, in relazione a \textit{query annidate}, solitamente si suddividono due aree, le quali sono caratterizzate da riferimenti interni ed esterni tra le query che compongono l'interrogazione.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Una query annidata è detta \textbf{semplice} se non avviene passaggio di binding, dove la query più interna viene valutata con ciascuna riga della tabella esterna, ossia non è presente alcuna dipendenza fra le due.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Una query annidata è detta \textbf{complessa} se avviene passaggio di binding, dove le interrogazioni interne vengono valutate su ogni tupla. \textbf{Trovare migliore definizione}
+
+\subsection*{Viste}
+\large
+Le \textbf{viste} sono tabelle \textit{virtuali}, formulate mediante dati contenuti in ulteriori relazioni della base di dati. Ogni \textit{vista} ha una propria denominazione e un insieme di domini che la contraddistingue, ottenuta mediante un costrutto sintattico particolare, quale:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Create view nameView (nameAttribute1, ..., nameAttributeN)}
+    \item \textit{As SelectSQL} 
+    \item \textit{...} 
+\end{itemize}
+I valori che compongono una \textit{vista} non sono memorizzati fisicamente, poichè dipendono da altre relazioni, per cui la costruzione avviene solamente in memoria volatile. Spesso il costrutto introdotto è utilizzato qualora una richiesta specifica non possa essere formulata mediante \textit{query annidate}, la quale richieda l'utilizzo di \textit{operatori aggregati} e costrutti di selezione articolati.\vspace*{14pt}\\
+Sono attuate differenti realtà in cui si adoperano le \textit{tabelle virtuali}, suddivise in:
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item Implementazione di meccanismi di indipendenza tra il livello logico e il livello esterno
+    \item Garantire la retrocompatibilità con precedenti versioni del database
+    \item Realizzare interrogazioni complesse, semplificandone la sintassi
+\end{itemize}
+\textbf{Esempi particolari}\\
+...
+
+\subsection*{Costrutti avanzati}
+\large
+Fino ad ora sono stati trattati costrutti basilari, caratteristici della versione del linguaggio SQL2. Tuttavia, la versione successiva a quella citata precedentemente, ossia SQL3, mette a disposizione i \textbf{costrutti avanzati}, fortemente dipendenti dal \textit{Data-Base-Management-System} adoperato.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Le \textbf{procedure} sono frammenti di codice SQL, molto simili al comportamento esecutivo di funzioni in un linguaggio di programmazione. Al loro interno è possibile illustrare un nominativo, parametri di ingresso e valori di ritorno.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Un \textbf{trigger} è un meccanismo di gestione della base di dati, basato sul paradigma \textit{ECA}, acronimo di evento, condizione e azione.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Un \textbf{permesso} è un meccanismo di controllo di accesso alle risorse mantenute dallo schema della base di dati. Su ogni risorsa sono stabiliti dei \textbf{privilegi}, i quali permettono di compiere le tipiche operazioni di accesso, lettura, modifica oppure di eliminazione.
 \end{document}
