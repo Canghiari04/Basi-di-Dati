@@ -8,6 +8,11 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{titlesec}
 \usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{adjustbox}
 
 \titleformat{\section} 
 {\LARGE\bfseries}{\thesection}{1em}{}
@@ -15,142 +20,121 @@
 \titleformat{\subsection} 
 {\Large\bfseries}{\thesection}{1em}{}
 
-\begin{document}
+\definecolor{mysqlblue}{RGB}{0, 51, 102}
 
+\lstset{
+  language=SQL,
+  backgroundcolor=\color{mysqlblue},
+  basicstyle=\color{white}\ttfamily,
+  frame=single,
+  framerule=1pt,
+  rulecolor=\color{mysqlblue},
+  numbers=left,
+  numberstyle=\tiny\color{white},
+  captionpos=b,
+  breaklines=true,
+}
+
+\begin{document}
 \pagestyle{empty}
 
 \section*{Gestione delle transazioni} 
 \large
+Tramite DDL e DML è possibile garantire una costruzione dell'architettura e insiemi di interrogazioni congrue ad un qualsiasi modello relazionale. Tuttavia, fino ad ora è stata attuata una semplificazione a livello strutturale, ossia non sono state considerate operazioni concorrenti e che le tabelle della basi dati possano divenire  \textit{sezioni critiche}. Prima di affrontare un contesto simile, si definiscono brevemente i termini citati.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Con \textit{concorrenza} si intende qualora più processi siano eseguiti nello stesso istante, causando alterazioni del sistema software di riferimento.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Con \textit{sezione critica} si descrive un dato o un insiemi di dati condivisi a più processi di diversa natura, i quali possono essere soggetti a modifiche dagli stessi, provocandone inconsistenza.\vspace*{14pt}\\
+Alludendo ad un database siffatto qualora un utente finale, quindi che adoperi indirettamente la struttura dati, dovesse inserire valori inerenti all'acquisto di beni e servizi, il compito del DBMS consiste nell'aggiunta di un record di riferimento in una delle tabelle contenute, incrementando la quantità del prodotto selezionato. Tuttavia, essa rappresenta solo una delle possibili effettività che si possano concretizzare, poichè una realtà differente potrebbe consistere nel malfunzionamento del server in cui si accetti il pagamento del prodotto selezionato, senza elaborare la richiesta effettuata. Per cui occorre gestire le \textit{transazioni}.
 
-Le \textbf{transazioni} rappresentano \textbf{unità di lavoro} elementari che \textbf{modificano} il contenuto di una base di dati. Si osservino degli esempi possibili:
-\begin{itemize}[label={ }, leftmargin=1cm]
-    \item \textit{\textbf{start transaction}}
-    \item \textit{update SalariImpiegati}
-    \item \textit{set conto = conto * 1.2}
-    \item \textit{where (CodiceImpiegato = 123)}
-    \item \textit{\textbf{commit work};}
-\end{itemize}
-Come si può vedere, le transazioni sono comprese tra una start transaction ed una commit/rollback, come osservabile nell'esempio:
-\begin{itemize}[label={ }, leftmargin=1cm]
-    \item \textit{\textbf{start transaction}}
-    \item \textit{update SalariImpiegati}
-    \item \textit{set conto = conto * 1.2}
-    \item \textit{where (CodiceImpiegato = 123)}
-    \item \textit{if var > 0 then \textbf{commit work};}
-    \item \textit{else \textbf{rollback work};}\\
-\end{itemize}
-Le transazioni possiedono delle proprietà, dette \textbf{ACID}:
-\begin{itemize}[label={-}, leftmargin=1cm]
-    \item \textbf{Atomicità}: la transazione deve essere eseguita con la regola del \textit{tutto o niente}
-    \item \textbf{Consistenza}: la transazione deve lasciare la base di dati in uno stato \textbf{consistente}, eventuali vincoli di integrità non devono essere violati
-    \item \textbf{Isolamento}: l'esecuzione di una transazione deve essere \textbf{indipendente} dalle altre
-    \item \textbf{Persistenza}: l'effetto di una transazione che ha fatto \textit{commit work} non deve essere perso
-\end{itemize}
-La gestione delle transazioni può essere vista come una suddivisione di due gestioni differenti:
-\begin{itemize}[label={-}, leftmargin=1cm]
-    \item \textbf{Gestione dell'affidabilità}: garantisce \textit{atomicità} e \textit{persistenza}, utilizzando \textbf{log} e \textbf{checkpoint}
-    \item \textbf{Gestione della concorrenza}: garantisce l'\textit{isolamento} in caso di esecuzione \textbf{concorrente} di più transazioni\\
-\end{itemize}
-Si osservino ora dei concetti teorici inerenti alle transazioni.\\
-Dato un \textbf{insieme di transazioni \textit{$T_1$, $T_2$, \dots, $T_n$}} di cui ciascuna formata da un certo insieme di operazioni di scrittura \textit{($w_i$)} e lettura \textit{($r_i$)}, si definisce \textbf{schedule} la sequenza di operazioni di lettura/scrittura di tutte le transazioni \textbf{cosi come eseguite sulla base di dati}.\vspace{14pt}\\
-Uno schedule \textbf{\textit{S}} si dice \textbf{seriale} se \textbf{le azioni di ciascuna transazione appaiono in sequenza}, senza essere interrotte da azioni di altre transazioni. Uno schedule seriale è ottenibile se:
-\begin{enumerate}[leftmargin=1cm]
-    \item le transazioni sono \textbf{eseguite uno alla volta}, scenario non realistico
-    \item le transazioni sono \textbf{completamente indipendenti} l'una dall'altra, impossibile
-\end{enumerate}
-Uno schedule \textbf{\textit{S}} si dice \textbf{serializzabile} se \textbf{produce lo stesso risultato di un qualunque scheduler seriale S'} delle stesse transazioni.\vspace{14pt}\\
-In un sistema reale, le \textbf{transazioni vengono eseguite in concorrenza} per ragioni di efficienza e scalabilità. Tuttavia, l'esecuzione concorrente determina un insieme di \textbf{problematiche} che devono essere gestite. Alcuni problemi possono essere:
-\begin{enumerate}[leftmargin=1cm]
-    \item \textbf{Perdita di aggiornamento}
-    \begin{center}
-        \includegraphics[width=0.8\textwidth]{foto 1.png}
-    \end{center}
-    In questo caso, l'esecuzione della seconda transazione invalida il risultato della prima transazione
-    \item \textbf{Lettura sporca}
-    \begin{center}
-        \includegraphics[width=0.8\textwidth]{foto 2.png}
-    \end{center}
-    Nel caso di rollback in una transazione, le transazioni che utilizzano quei dati compromessi si trovano in uno stato di errore
-    \item \textbf{Letture inconsistenti}
-    \begin{center}
-        \includegraphics[width=0.8\textwidth]{foto 3.png}
-    \end{center}
-    In questo caso, viene effettuato un read precedente alla seconda transazione, che invalida il risultato richiesto
-    \item \textbf{Aggiornamento fantasma}
-    \begin{center}
-        \includegraphics[width=0.8\textwidth]{foto 4.png}
-    \end{center}
-    In questo caso, la prima transazione non considera i valori modificati dalla seconda transazione, ottenendo un risultato errato
-\end{enumerate}
-Bisogna quindi stabilire un metodo per il \textbf{controllo della concorrenza}. I DBMS commerciali usano il meccanismo dei \textbf{lock}. Per poter effettuare una qualsiasi operazione di lettura/scrittura su una risorsa, tabella o valore di una cella, \textbf{è necessario aver precedenetemente acquisito il controllo, o lock, sulla risorsa stessa}. \\
-Come visto in precedenza in altri corsi, il \textbf{lock in lettura} consente un accesso condiviso alla risorsa, mentre il \textbf{lock in scrittura} segue il concetto di mutua esclusione.\\
-Su ogni lock possono essere definite \textbf{due operazioni}:
-\begin{itemize}[label={-}, leftmargin=1cm]
-    \item \textbf{Richiesta} del lock in lettura/scrittura
-    \item \textbf{Rilascio} del lock acquisito in precedenza
-\end{itemize}
-\begin{center}
-    \includegraphics[width=0.65\textwidth]{foto 5.png}
-\end{center}
-Il \textbf{lock manager} è un componenete del DBMS responsabile di \textbf{gestire i lock alle risorse del DB, e di rispondere alle richieste delle transazioni}. Per ciascun oggetto \textit{x} del DBMS, possiamo accedere a tre strutture dati:
-\begin{itemize}[label={-}, leftmargin=1cm]
-    \item \textbf{State(x)}: indica lo \textbf{stato} dell'oggetto (libero / r\_locked / w\_locked)
-    \item \textbf{Active(x)}: lista delle transazioni attive sull'oggetto
-    \item \textbf{Queued(x)}: lista delle transazioni bloccate sull'oggetto
-\end{itemize}
-Davanti ad una richiesta, il lock manager esegue diversi step:
-\begin{enumerate}[leftmargin=1cm]
-    \item Riceve una richiesta (r\_lock / w\_lock / unlock) da una transazione \textit{T}, su un oggetto \textit{x}, che può essere una tabella, una colonna, etc
-    \item Controlla la \textbf{tabella stato/azione}
-    \begin{center}
-        \includegraphics[width=0.65\textwidth]{foto 6.png}
-    \end{center}
-    \item Se la risposta è \textbf{OK}, \textbf{aggiorna lo stato della risorsa}, e concede il controllo della risorsa alla transazione \textit{T}
-    \item Se la risposta è \textbf{NO}, \textbf{inserisce la transazione \textit{T} in una coda} associata ad \textit{x}
-\end{enumerate}
-
-\subsection*{Two Phase Lock (2PL)}
+\subsection*{Transizione}
 \large
+Una \textbf{transizione} rappresenta un'unità di lavoro elementari che modificano il contenuto di una base di dati. La sintassi adoperata da modelli relazionali è posta come segue:
+\begin{itemize}[label={ }, leftmargin=1cm]
+    \itemsep0em
+    \item \textit{Start Transaction}
+    \item \textit{...}
+    \item \textit{Commit/Rollback work}
+\end{itemize}
+Le \textit{transazioni} sono comprese da una certa semantica, da una parte iniziale \textit{Start Transaction} e da una sezione conclusiva \textit{Commit/Rollback}. La differenza dei costrutti finali è relativa all'incidenza della transizione all'interno del database; \textit{commit} indica il consolidamento dell'azione su disco qualora terminata la \textit{transizione}, mentre \textit{rollback} provoca la cancellazione di tutto ciò che sia limitato dalla sintassi in questione, per cui ripristina lo stato della base di dati prima del frammento di codice.
+Come è stato già illustrato una \textit{transizione} pone molta importanza sulla propria sintassi, ma questa centralità è data dalla semantica su cui fonda, suddivisa in diverse caratteristiche, quali: \textbf{Trovare spiegazioni delle caratteristiche}
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item \textit{Atomicità}\vspace*{7pt}\\ \textit{Definizione}\\La transizione deve essere eseguita con la regola del tutto o del niente.\vspace*{7pt}\\ La definizione pone che in relazione ad una qualsiasi azione adottata la transizione deve provvedere al ripristino dello stato precedente all'attività modellata, indipendentemente se sia andata a buon fine o meno.
+    \item \textit{Consistenza}\vspace*{7pt}\\ \textit{Definizione}\\La transizione deve lasciare la base di dati in uno stato \textit{consistente}, eventuali vincoli di integrità referenziale non devono essere infranti.
+    \item \textit{Isolamento}\vspace*{7pt}\\ \textit{Definizione}\\L'esecuzione della transizione deve essere indipendente dalle corrispettive.
+    \item \textit{Persistenza}\vspace*{7pt}\\ \textit{Definizione}\\Il commit di una transizione non deve essere perso.\vspace*{14pt}\\Rappresenta l'affidabilità della struttura dati, ... 
+\end{itemize}
+Di seguito, sono illustrati due esempi che implementano i due contraddistinti costrutti finali, descritti come da modello.\vspace*{14pt}\\
+\begin{minipage}{\textwidth}
+    \begin{lstlisting}
+START TRANSACTION
+UPDATE SalariImpiegati
+SET Conto = (Conto * 1.2)
+WHERE (CodiceImpiegato = 010)
+COMMIT WORK;
+    \end{lstlisting}
+    \captionof{figure}{Esempio che implementa il costrutto commit}
+\end{minipage}\vspace*{14pt}
+\begin{minipage}{\textwidth}
+    \begin{lstlisting}
+START TRANSACTION
+UPDATE SalariImpiegati
+SET Conto = (Conto * 1.2)
+WHERE (CodiceImpiegato = 010)
+IF (Conto > 1000) THEN COMMIT WORK;
+ELSE ROLLBACK WORK;
+    \end{lstlisting}
+    \captionof{figure}{Esempio che implementa il costrutto rollback}
+\end{minipage}\vspace*{14pt}
+Un ulteriore elemento fondamentale consiste nella \textit{gestione delle transazioni}. Nonostante, database relazionali sono macchiati dalla mancata possibilità di massimizzazione dei principi elencati precedentemente. Detto ciò, si suddividono due realtà implementative, le quali sono gestioni legate all'\textit{affidabilità}, per cui garantiscono \textit{atomicità} e \textit{persistenza}, oppure gestioni specializzate sulla \textit{concorrenza}, capaci di adottare \textit{isolamento} in caso di esecuzione di più \textit{transazioni}.\vspace{14pt}\\
+Alcuni DBMS apportano nelle loro architetture una \textit{granularità} di concorrenza talmente elevata che si attua per singole celle interpellate per successive operazioni. In tale casistica \textit{MySQL} fornisce un'allusione al parallelismo, ma provvede ad una rapida e fulminea \textit{sequenzialità}. Per cui è bene sottolinerare teoricamente il concetto di \textbf{schedule}.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Dato un \textbf{insieme di transazioni \textit{$T_1$, $T_2$, \dots, $T_n$}} di cui ciascuna formata da un certo insieme di operazioni di scrittura \textit{($w_i$)} e lettura \textit{($r_i$)}, si definisce \textbf{schedule} la sequenza di operazioni di lettura/scrittura di tutte le transazioni \textbf{cosi come eseguite sulla base di dati}.\vspace*{14pt}\\
+\textit{Definizione informale}\\
+Uno schedule \textbf{\textit{S}} si dice \textbf{seriale} se \textbf{le azioni di ciascuna transazione appaiono in sequenza}, senza essere interrotte da azioni di altre transazioni.\vspace*{14pt}\\
+Per cui riassumendo uno \textit{schedule} è detto \textit{serializzabile} se le transazioni sono eseguite sequenzialmente e risultano completamente indipendenti l'una dall'altre. Tuttavia, tale approccio è altamente inefficiente, causando un tempo di attesa estremamente elevato; per cui occorre operare mediante attività parallele, ossia è necessario elaborare contemporaneamente più processi alla volta.\vspace*{14pt}\\
+Quanto detto si traduce in \textit{esecuzione concorrente}, la quale potrebbe causare un insieme di problematiche ricorrenti. Nuovamente, con il termine esecuzione concorrente si fa riferimento che più di un processo possano essere eseguiti nello stesso istante. Le avversità più ricorrenti risultano:
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item \textit{Perdita di aggiornamento}, avviene qualora transazioni operano su stessi dati, in cui una dell'entità non conclude la propria operatività in relazione ad uno specifico valore, per cui corrisposte elaborano lo stesso come se non fosse stata attuata alcuna modifica.
+    \item \textit{Lettura sporca}, avviene qualora utilizzato il costrutto \textit{rollback}, dove nuovamente, una transazione operante su certi dati non concluda la propria attività, tale che corrisposte analizzino un valore viziato, il quale non dovrebbe concretamente subire alcuna variazione.
+    \item \textit{Lettura incosistente}, avviene qualora effettuato un \textit{read} precedente ad una modifica che deve essere riferita su disco
+    \item \textit{Aggiornamento fantasma}, avviene qualora si operi su valori modificati da transazioni corrisposte, adoperando \textit{read} su risultati non corretti  
+\end{itemize}
+Concludendo, quindi si vuole realizzare uno \textit{schedule} in grado di porre transazioni in maniera parallela e adottare meccanismi di controllo della concorrenza. Ciò è possibile tramite l'utilizzo dei \textit{lock}.
 
-In un \textbf{Two Phase Lock}, una transazione, \textbf{dopo aver rilasciato un lock, non può acquisirne un altro}. In pratica, una transazione \textbf{acquisisce prima tutti i lock delle risorse di cui necessita}.\\
-Ogni schedule che rispetta il 2PL è anche \textbf{serializzabile}. Inoltre, ogni schedule che rispetta il 2PL non può incorrere in \textbf{configurazioni erronee} dovuta ad aggiornamenti fantasma, letture inconsistenti o perdite di aggiornamento; è ancora presente il problema della lettura sporca.
-
-\subsection*{Strict Two Phase Lock (S2PL)}
+\subsection*{Gestione della concorrenza}
 \large
+Per poter effettuare una qualsiasi operazione di lettura oppure di scrittura, è necessario aver precedentemente acquisito il \textbf{lock di riferimento}. Inoltre, vengono distinti due tipologie di lock, \textit{lock di lettura} consente un accesso condiviso, per cui da parte di più processi, sulla stessa ricorsa in questione, e \textit{lock di scrittura}, i quali ammettono \textit{mutua esclusione}, ossia un singolo elemento può avere il pieno controllo del dato desiderato.\vspace*{14pt}\\
+I DBMS hanno a disposizione \textit{lock manager} per poter fronteggiare alle problematiche poste tra transazioni, il quale ammette due singole azioni, ossia di \textit{richiesta} oppure di \textit{rilascio} del lock. Il compito del \textit{lock manager} prevede di gestire i \textit{lucchetti} riferite alle risorse contenute nel database e di rispondere adeguatamente alle richieste delle transazioni. Ciò avviene considerando un trio di strutture dati, poste in favore ad una risorsa \textit{x} appartenente alla base di dati, quali:
+\begin{itemize}[label={-}]
+    \itemsep0em
+    \item \textit{State(x)}, rappresenta lo stato della risorsa, la quale può essere (Libero / w\_lock / r\_lock), dove rispettivamente la prima condizione indica che il dato richiesto è libero di essere manipolato, la seconda pone mutua esclusione poichè adoperato per azioni di modifica, infine la terza rappresenta un lock di lettura, il quale può essere condiviso ma non attuato per promuovere variazioni
+    \item \textit{Active(x)}, raffigura la lista contenente le transizioni \textit{attive} sulla risorsa in questione
+    \item \textit{Queued(x)}, raffigura la lista contenente le transizioni \textit{bloccate} sulla risorsa in questione
+\end{itemize}
+Davanti ad una richiesta, il \textit{lock manager} esegue diversi step:
+\begin{enumerate}[label={-}]
+    \item Riceve una richiesta (r\_lock / w\_lock / unlock) da una transazione \textit{T}, su un oggetto \textit{x}
+    \item Controlla la \textit{tabella stato/azione}
+    \item Se la risposta è \textit{OK}, aggiorna lo stato della risorsa, e concede il controllo della risorsa alla transazione \textit{T}
+    \item Se la risposta è \textit{NO}, inserisce la transazione \textit{T} in una coda associata ad \textit{x}, per cui aggiungendola alla lista \textit{Queued}
+\end{enumerate}
+Stabilito il comportamento generale su cui fonda un manager di lock, DBMS relazionali tipicamente adottano due tipologie contraddistinte di meccanismi per manipolare concorrenza tra transazioni.\vspace*{14pt}\\
+\textbf{Two Phase Lock}\\
+Il lock manager \textit{Two Phase Lock}, non permette a transazioni che abbiano rilasciato i meccanismi di mutua esclusione, di acquisirne ulteriori. Per cui il paradigma implementato richiede che un qualsiasi processo operante debba prima apprendere tutti i lock necessari per la manipolazione delle risorse desiderate. Ogni schedule che adegua il 2PL è \textit{serializzabile} e non incorre in effettività erronee dovute ad \textit{aggiornamenti fantasma}, \textit{letture inconsistenti} oppure \textit{perdite di aggiornamenti}; tuttavia è ancora presente il problema della \textit{lettura sporca}.\vspace*{14pt}\\
+\textbf{Strict Two Phase Lock}\\
+In un \textit{Strict Two Phase Lock}, i lock di una transazione sono rilasciati solo dopo aver effettuato le operazioni di commit/rollback.
+Uno schedule che rispetta il S2PL eredita tutte le proprietà del 2PL, ed inoltre non presenta anomalie causate da problemi di \textit{lettura sporca}.\vspace{14pt}\\
+Nonostante i due protocolli permettano di ovviare a problematiche legate all'esecuzione concorrente, sono accomunati da una specifica avversità, in certe circostanze potrebbero generare schedule con situazioni di \textit{deadlock}. Per gestire le situazioni di deadlock causate dal lock manager, si possono usare tre tecniche:
+\begin{enumerate}[label={-}]
+    \item \textit{Uso dei timeout}, ogni operazione di una transazione ha un timeout entro il quale deve essere completata, pena annullamento della transazione stessa
+    \item \textit{Deadlock avoidance}, prevenire le configurazioni che potrebbero portare ad un deadlock. Si può prevenire in due modi: attraverso l'utilizzo di lock/unclock su tutte le risorse allo stesso tempo oppure attraverso l'utilizzo di time stamp o di classi di priorità tra transazioni, nonostante possano provocare \textit{starvation}
+    \item \textit{Deadlock detection}, utilizzare algoritmi per identificare eventuali situazioni di deadlock, e prevedere meccanismi di recovery dal deadlock. Si possono identificare attraverso l'utilizzo di grafi delle richieste/risorse, utilizzato per identificare la presenza di cicli. In caso di ciclo, si fa rollback delle transazioni coinvolte nel ciclo in modo da eliminare la duplice dipendenza
+\end{enumerate}
 
-In un \textbf{Strict Two Phase Lock}, \textbf{i lock di una transazione sono rilasciati solo dopo aver effettuato le operazioni di commit/rollback}.\\
-Uno schedule che rispetta lo S2PL \textbf{eredita tutte le proprietà del 2PL}, ed inoltre \textbf{non} presenta anomalie causate da problemi di \textbf{lettura sporca}.\vspace{14pt}\\
-I due protocolli presentano un problema che li accomuna, potendo generare schedule con situazioni di \textbf{deadlock}. Per gestire le situazioni di deadlock causate dal lock manager, si possono usare tre tecniche:
-\begin{enumerate}[leftmargin=1cm]
-    \item \textbf{Uso dei timeout}: \textbf{ogni operazione di una transazione ha un timeout} entro il quale deve essere completata, \textbf{pena annullamento (rollback) della transazione stessa}
-    \item \textbf{Deadlock avoidance}: prevenire le configurazioni che potrebbero portare ad un deadlock. Si può prevenire in due modi: attraverso l'utilizzo di \textbf{lock/unclock} di tutte le risorse allo stesso tempo; o attraverso l'utilizzo di \textbf{time stamp o di classi di priorità} tra transazioni (può provocare \textbf{starvation})
-    \item \textbf{Deadlock detection}: utilizzare \textbf{algoritmi per identificare eventuali situazioni di deadlock}, e prevedere meccanismi di recovery dal deadlock. Si possono identificare attraverso l'utilizzo di \textbf{grafi delle richieste/risorse}, utilizzato per identificare la presenza di cicli. In caso di ciclo, si fa rollback delle transazioni coinvolte nel ciclo in modo da eliminare la mutua dipendenza\\
-\end{enumerate}
-MySQL offre quattro livelli di isolamento:
-\begin{enumerate}[label={-}, leftmargin=1cm]
-    \item \textbf{READ UNCOMMITTED}: sono visibili gli aggiornamenti non consolidati fatti da altri
-    \item \textbf{READ COMMITTED}: aggiornamenti visibili solo se consolidati, ossia solo dopo COMMIT
-    \item \textbf{REPEATABLE READ}: tutte le letture di un dato operate da una transazione leggono sempre lo stesso valore (comportamento di \textbf{default})
-    \item \textbf{SERIALIZABLE}: lettura di un dato blocca gli aggiornamenti fino al termine della transazione stessa che ha letto il dato, lock applicato ad ogni SELECT\\
-\end{enumerate}
-Si osservi ora la sintassi generale in MySQL:\\
-Per \textbf{iniziare una transazione} e completarla:
-\begin{itemize}[label={ }, leftmargin=1cm]
-    \item \textit{SET AUTOCOMMIT = 0}
-    \item \textit{START TRANSACTION}
-    \item \textit{\dots (Statements SQL)}
-    \item \textit{COMMIT/ROLLBACK}
-\end{itemize}
-Per \textbf{configurare il livello di isolamento} di esecuzione:
-\begin{itemize}[label={ }, leftmargin=1cm]
-    \item \textit{SET TRANSACTION ISOLATION LEVEL}
-    \item \quad \textit{REPEATABLE READ | READ COMMITTED | }
-    \item \quad \textit{READ UNCOMMITTED | SERIALIZABLE}
-\end{itemize}
-\textit{Nota Bene}: le transazioni sono \textbf{utilizzabili solo} su tabelle di tipo \textbf{INNODB}.\vspace{14pt}\\
-E' possibile inoltre \textbf{gestire manualmente le operazioni di lock} su tabelle, anche se sconsigliato su tabelle di tipo INNODB:
-\begin{itemize}[label={ }, leftmargin=1cm]
-    \item \textit{LOCK TABLES}
-    \item \quad \textit{tabella {READ | WRITE}}
-\end{itemize}
+\subsection*{...}
+\large
+...
 \end{document}
