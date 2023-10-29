@@ -47,20 +47,20 @@ Con \textit{concorrenza} si intende qualora più processi siano eseguiti nello s
 Con \textit{sezione critica} si descrive un dato o un insiemi di dati condivisi a più processi di diversa natura, i quali possono essere soggetti a modifiche dagli stessi, provocandone inconsistenza.\vspace*{14pt}\\
 Alludendo ad un database siffatto qualora un utente finale, quindi che adoperi indirettamente la struttura dati, dovesse inserire valori inerenti all'acquisto di beni e servizi, il compito del DBMS consiste nell'aggiunta di un record di riferimento in una delle tabelle contenute, incrementando la quantità del prodotto selezionato. Tuttavia, essa rappresenta solo una delle possibili effettività che si possano concretizzare, poichè una realtà differente potrebbe consistere nel malfunzionamento del server in cui si accetti il pagamento del prodotto selezionato, senza elaborare la richiesta effettuata. Per cui occorre gestire le \textit{transazioni}.
 
-\subsection*{Transizione}
+\subsection*{Transazione}
 \large
-Una \textbf{transizione} rappresenta un'unità di lavoro elementari che modificano il contenuto di una base di dati. La sintassi adoperata da modelli relazionali è posta come segue:
+Una \textbf{transazione} rappresenta un'unità di lavoro elementari che modificano il contenuto di una base di dati. La sintassi adoperata da modelli relazionali è posta come segue:
 \begin{itemize}[label={ }, leftmargin=1cm]
     \itemsep0em
     \item \textit{Start Transaction}
     \item \textit{...}
     \item \textit{Commit/Rollback work}
 \end{itemize}
-Le \textit{transazioni} sono comprese da una certa semantica, da una parte iniziale \textit{Start Transaction} e da una sezione conclusiva \textit{Commit/Rollback}. La differenza dei costrutti finali è relativa all'incidenza della transizione all'interno del database; \textit{commit} indica il consolidamento dell'azione su disco qualora terminata la \textit{transizione}, mentre \textit{rollback} provoca la cancellazione di tutto ciò che sia limitato dalla sintassi in questione, per cui ripristina lo stato della base di dati prima del frammento di codice.
+Le \textit{transazioni} sono comprese da una certa semantica, da una parte iniziale \textit{Start Transaction} e da una sezione conclusiva \textit{Commit/Rollback}. La differenza dei costrutti finali è relativa all'incidenza della transazione all'interno del database; \textit{commit} indica il consolidamento dell'azione su disco qualora terminata la \textit{transazione}, mentre \textit{rollback} provoca la cancellazione di tutto ciò che sia limitato dalla sintassi in questione, per cui ripristina lo stato della base di dati prima del frammento di codice.
 Come è stato già illustrato una \textit{transazione} pone molta importanza sulla propria sintassi, ma questa centralità è data dalla semantica su cui fonda, suddivisa in diverse caratteristiche, quali: \textbf{Trovare spiegazioni delle caratteristiche}
 \begin{itemize}[label={-}]
     \itemsep0em
-    \item \textit{Atomicità}\vspace*{7pt}\\ \textit{Definizione}\\La transizione deve essere eseguita con la regola del tutto o del niente.\vspace*{7pt}\\ La definizione pone che in relazione ad una qualsiasi azione adottata la transazione deve provvedere al ripristino dello stato precedente all'attività modellata, indipendentemente se sia andata a buon fine o meno.
+    \item \textit{Atomicità}\vspace*{7pt}\\ \textit{Definizione}\\La transazione deve essere eseguita con la regola del tutto o del niente.\vspace*{7pt}\\ La definizione pone che in relazione ad una qualsiasi azione adottata la transazione deve provvedere al ripristino dello stato precedente all'attività modellata, indipendentemente se sia andata a buon fine o meno.
     \item \textit{Consistenza}\vspace*{7pt}\\ \textit{Definizione}\\La transazione deve lasciare la base di dati in uno stato \textit{consistente}, eventuali vincoli di integrità referenziale non devono essere infranti.
     \item \textit{Isolamento}\vspace*{7pt}\\ \textit{Definizione}\\L'esecuzione della transazione deve essere indipendente dalle corrispettive.
     \item \textit{Persistenza}\vspace*{7pt}\\ \textit{Definizione}\\Il commit di una transazione non deve essere perso.\vspace*{14pt}\\Rappresenta l'affidabilità della struttura dati, ... 
@@ -111,11 +111,12 @@ I DBMS hanno a disposizione \textit{lock manager} per poter fronteggiare alle pr
 \begin{itemize}[label={-}]
     \itemsep0em
     \item \textit{State(x)}, rappresenta lo stato della risorsa, la quale può essere (Libero / w\_lock / r\_lock), dove rispettivamente la prima condizione indica che il dato richiesto è libero di essere manipolato, la seconda pone mutua esclusione poichè adoperato per azioni di modifica, infine la terza rappresenta un lock di lettura, il quale può essere condiviso ma non attuato per promuovere variazioni
-    \item \textit{Active(x)}, raffigura la lista contenente le transizioni \textit{attive} sulla risorsa in questione
-    \item \textit{Queued(x)}, raffigura la lista contenente le transizioni \textit{bloccate} sulla risorsa in questione
+    \item \textit{Active(x)}, raffigura la lista contenente le transazioni \textit{attive} sulla risorsa in questione
+    \item \textit{Queued(x)}, raffigura la lista contenente le transazioni \textit{bloccate} sulla risorsa in questione
 \end{itemize}
 Davanti ad una richiesta, il \textit{lock manager} esegue diversi step:
 \begin{enumerate}[label={-}]
+    \itemsep0em
     \item Riceve una richiesta (r\_lock / w\_lock / unlock) da una transazione \textit{T}, su un oggetto \textit{x}
     \item Controlla la \textit{tabella stato/azione}
     \item Se la risposta è \textit{OK}, aggiorna lo stato della risorsa, e concede il controllo della risorsa alla transazione \textit{T}
@@ -124,10 +125,11 @@ Davanti ad una richiesta, il \textit{lock manager} esegue diversi step:
 Stabilito il comportamento generale su cui fonda un manager di lock, DBMS relazionali tipicamente adottano due tipologie contraddistinte di meccanismi per manipolare concorrenza tra transazioni.\vspace*{14pt}\\
 \textbf{Two Phase Lock}\\
 Il lock manager \textit{Two Phase Lock}, non permette a transazioni che abbiano rilasciato i meccanismi di mutua esclusione, di acquisirne ulteriori. Per cui il paradigma implementato richiede che un qualsiasi processo operante debba prima apprendere tutti i lock necessari per la manipolazione delle risorse desiderate. Ogni schedule che adegua il 2PL è \textit{serializzabile} e non incorre in effettività erronee dovute ad \textit{aggiornamenti fantasma}, \textit{letture inconsistenti} oppure \textit{perdite di aggiornamenti}; tuttavia è ancora presente il problema della \textit{lettura sporca}.\vspace*{14pt}\\
+Concludendo, la scelta del nominativo è dovuta alla modalità in cui una transazione sia costretta a sottostare pur di ottenere i lock. Come descritto prima, una transazione non può alternare rilasci e acquisizioni dei lucchetti, per cui si richiede prima che apprenda tutti i lock desiderati, illustrando un accrescere di operazioni consecutive, per poi stabilizzarsi, adeguando tutte le attività di propria competenza, ed infine libera tutti i meccanismi di mutua esclusione adoperati. Da cui deriva il nome \textit{Two Phase Lock}, dedicato prima alla sola richiesta e successivamente, dopo aver concluso l'utilizzo delle risorse condivise, al rilascio tutti i lock usati.\vspace*{14pt}\\
 \textbf{Strict Two Phase Lock}\\
 In un \textit{Strict Two Phase Lock}, i lock di una transazione sono rilasciati solo dopo aver effettuato le operazioni di commit/rollback.
 Uno schedule che rispetta il S2PL eredita tutte le proprietà del 2PL, ed inoltre non presenta anomalie causate da problemi di \textit{lettura sporca}.\vspace{14pt}\\
-Nonostante i due protocolli permettano di ovviare a problematiche legate all'esecuzione concorrente, sono accomunati da una specifica avversità, in certe circostanze potrebbero generare schedule con situazioni di \textit{deadlock}. Per gestire le situazioni di deadlock causate dal lock manager, si attuano tre tecniche:
+Nonostante i due protocolli permettano di ovviare a problematiche legate all'esecuzione concorrente, sono accomunati da una specifica avversità, in certe circostanze potrebbero generare situazioni di \textit{deadlock}. Per gestire le situazioni di deadlock causate dal lock manager, si attuano tre tecniche:
 \begin{enumerate}[label={-}]
     \item \textit{Uso dei timeout}, ogni operazione di una transazione ha un timeout entro il quale deve essere completata, pena annullamento della transazione stessa, ossia si adopera \textit{rollback} nella sezione conclusiva
     \item \textit{Deadlock avoidance}, prevenire le configurazioni che potrebbero portare ad un deadlock. Si può prevenire in due modi: attraverso l'utilizzo di lock/unclock su tutte le risorse allo stesso tempo oppure attraverso l'utilizzo di \textit{time stamp} o di \textit{classi di priorità} tra transazioni, nonostante possano provocare \textit{starvation}
