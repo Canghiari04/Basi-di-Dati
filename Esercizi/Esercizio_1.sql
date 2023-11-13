@@ -1,14 +1,13 @@
 DROP DATABASE IF EXISTS INVESTIMENTI;
 CREATE DATABASE IF NOT EXISTS INVESTIMENTI;
 USE INVESTIMENTI;
-
 CREATE TABLE CLIENTE(
 Id INT PRIMARY KEY AUTO_INCREMENT,
 Nome VARCHAR(30) NOT NULL,
 Cognome VARCHAR(30) NOT NULL,
 AnnoNascita INT,
 TotaleCapitaleInvestito INT DEFAULT 0
-);
+) ENGINE = InnoDB;
 
 CREATE TABLE CONTO_CORRENTE(
 IdCliente INT,
@@ -16,14 +15,14 @@ NomeFiliale VARCHAR(30),
 TotaleImporto INT DEFAULT 1000,
 PRIMARY KEY(IdCliente),
 FOREIGN KEY(IdCliente) REFERENCES CLIENTE(Id) ON DELETE CASCADE
-);
+) ENGINE = InnoDB;
 
 CREATE TABLE TITOLO_STATO(
 NomeStato VARCHAR(30),
 NomeValuta VARCHAR(30),
 RischioDefault ENUM('ALTO', 'MEDIO', 'BASSO'),
 PRIMARY KEY(NomeStato)
-);
+) ENGINE = InnoDB;
 
 CREATE TABLE TITOLO_ACQUISTATO(
 IdCliente INT,
@@ -34,14 +33,14 @@ AnnoFineInvestimento INT,
 PRIMARY KEY(IdCliente, NomeStato), 
 FOREIGN KEY(IdCliente) REFERENCES CLIENTE(Id) ON DELETE CASCADE,
 FOREIGN KEY(NomeStato) REFERENCES TITOLO_STATO(NomeStato) ON DELETE CASCADE
-);
+) ENGINE = InnoDB;
 
 CREATE TABLE AGENZIA_RATING(
 Nome VARCHAR(30) PRIMARY KEY,
 Sede VARCHAR(30),
 AnnoFondazione INT,
 NumeroDipendenti INT
-);
+) ENGINE = InnoDB;
 
 CREATE TABLE GIUDIZIO_RATING(
 NomeStato VARCHAR(30) REFERENCES TITOLO_STATO(NomeStato),
@@ -49,7 +48,7 @@ NomeAgenzia VARCHAR(30) REFERENCES AGENZIA_RATING(Nome) ON DELETE CASCADE,
 Data DATETIME,
 Giudizio ENUM('A', 'B', 'C', 'D'),
 PRIMARY KEY(NomeStato, NomeAgenzia, Data)
-);
+) ENGINE = InnoDB;
 
 DELIMITER |
 CREATE TRIGGER SettaRischioDefault
@@ -77,7 +76,7 @@ DELIMITER |
 CREATE TRIGGER DecrementaCapitaleInvestito 
 AFTER DELETE ON TITOLO_ACQUISTATO
 FOR EACH ROW
-	UPDATE CLIENTE SET TotaleCapitaleInvestito=TotaleCapitaleInvestito-OLD.Capitale;
+	UPDATE CLIENTE SET TotaleCapitaleInvestito=TotaleCapitaleInvestito-OLD.Capitale WHERE(CLIENTE.Id=NEW.IdCliente);
 |
 DELIMITER ;
 
@@ -109,7 +108,7 @@ DELIMITER ;
 
 #Passaggio in input di tipi enum richiede che si passino anche i valori che la contraddistinguono
 DELIMITER |
-CREATE PROCEDURE InserisciGiudizio(IN NomeStato VARCHAR(30),  IN NomeAgenzia VARCHAR(30), IN Giudizio ENUM('A', 'B', 'C', 'D'))
+CREATE PROCEDURE InserisciGiudizio(IN NomeStato VARCHAR(30),  IN NomeAgenzia VARCHAR(30), IN Giudizio VARCHAR(1))
 BEGIN
 	DECLARE CountAgenzia INT DEFAULT 0;
     DECLARE CountTitolo INT DEFAULT 0;
