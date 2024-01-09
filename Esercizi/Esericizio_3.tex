@@ -8,6 +8,11 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{titlesec}
 \usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{fixltx2e}
+\usepackage{booktabs}
 
 \titleformat{\section} 
 {\LARGE\bfseries}{\thesection}{1em}{}
@@ -19,6 +24,175 @@
 
 \pagestyle{empty}
 
-\section*{Esercizio 3 } 
+\section*{Esercizio 3} 
+
+\subsection*{Modello E-R}
+\includegraphics*[width=0.9\textwidth]{foto1.png}
+
+\subsection*{Dizionario delle relazioni}
+\begin{table}[ht]
+    \centering
+    \begin{tabularx}{\textwidth}{|X|X|X|X|}
+        \hline
+        Relazione & Descrizione & Componenti & Attributi \\
+        \hline
+        Composizione & Tratta compone una o più linee ferroviarie & Linea, Tratta & . \\
+        \hline
+        Operazione & Treno merce opera su una linea ferroviaria & Linea, Merce & . \\
+        \hline
+        Disposizione & Compagnia ferroviaria mette a disposizione treni merci e passeggeri & Treno, CompagniaFerroviaria & . \\
+        \hline
+        Svolgimento & Compagnia svolte un intervento su una tratta & CompagniaFerroviaria, Intervento & . \\
+        \hline
+        Composizione & Una tratta è composta da due stazioni, una di arrivo e una di partenza & Tratta, Stazione & . \\
+        \hline
+        Fermata & Treno passeggeri compie una fermata presso una stazione & Passeggeri, Stazione & Data, Arrivo, Partenza \\
+        \hline
+        
+    \end{tabularx}
+    \caption{Descrizione delle relazioni del sistema ferroviario.}
+\end{table}
+
+\subsection*{Dizionario dell'entità}
+\begin{table}[ht]
+    \centering
+    \begin{tabularx}{\textwidth}{|X|X|X|X|}
+        \hline
+        Entità & Descrizione & Attributi & Identificatore \\
+        \hline
+        Linea & Linea ferroviaria & Codice, Lunghezza, DataApertura, NumTratte & Codice \\        
+        \hline
+        Tratta & Tratta che compone la linea ferroviaria & Numero, Lunghezza, Descrizione & Numero, CodiceLinea \\
+        \hline
+        Stazione & Stazione ferroviaria che accomuna linee e tratte & Nome, Regione, NumBinari, Foto & Nome \\
+        \hline
+        Intervento & Intervento di manutenzione per tratte ferroviarie & Codice, Data, Priorità, Costo, Descrizione & Codice \\
+        \hline
+        InterventoPeriodico & Intervento di manutenzione periodico & Report, Frequenza & CodiceIntervento \\
+        \hline
+        CompagniaFerroviaria & Ente che si occupa di interventi di manutenzione e rilascio dei treni & CodiceFiscale, Nome, Sede & CodiceFiscale \\
+        \hline
+        Treno & Treno per trasporto passeggeri o merci & Codice, NumVagoni, Modello & Codice \\
+        \hline
+        Merce & Tipologia di treno dedicato al trasporto di merci & Carico & CodiceTreno \\
+        \hline
+        Passeggeri & Tipologia di treno dedicato al trasporto di passeggeri & NumPosti, VagoneRistorante & CodiceTreno \\
+        \hline
+    \end{tabularx}
+    \caption{Descrizione delle entità del sistema ferroviario.}
+    \label{tab:descrizione-entita}
+\end{table}
+
+\subsection*{Costo operazionale}
 \large
+\textbf{Tavola dei volumi.} 10 tratte per linea, 30 tratte in totale.\\
+\textbf{Costanti.} $\alpha = 2$, $w_I = 1$, $w_B = 0.5$
+
+\begin{itemize}
+    \itemsep0em
+    \item[-] \textbf{OP1} \\ \textbf{Tavola degli accessi}. 1 per linea, 10 per composizione, 10 per tratta. \vspace*{7pt}\\ \textbf{CO(OP1) = $1 * 1 * (0 + 21) = 21$}
+    \item[-] \textbf{OP2} \\ \textbf{Tavola degli accessi}. 1 per tratta, 1 per svolgimento, 1 per lavoro. \vspace*{7pt}\\ \textbf{CO(OP2) = $1 * 0.5 * (2 * 3 * 0) = 3$}
+    \item[-] \textbf{OP3} \\ \textbf{Tavola degli accessi}. 1 per tratta, 3 per composizione. \vspace*{7pt}\\ \textbf{CO(OP3) = $0.1 * 0.5 * (2 * 4 + 0) = 0.4$}
+    \item[-] \textbf{OP4} \\ \textbf{Tavola degli accessi}. 1 per linea. \vspace*{7pt}\\ \textbf{CO(OP4) = $0.2 * 0.5 * (0 + 1) = 0.1$}
+\end{itemize}
+Quindi l'operazione più onerosa risulta essere la prima, OP1.
+\begin{itemize}
+    \itemsep0em
+    \item[-] \textbf{$S_r$} \\ C($S_r$) = C(OP1) + C(OP4) $= 21 + 0.1 = 21.1$
+    \item[-] \textbf{$S$} \\ C($S$) = C(OP1) * C(OP$4_{\text{noRidondanza}}$) $= 21 + 2 = 23$ \vspace*{7pt}\\ \textbf{C(OP$4_{\text{noRidondanza}}$)} \\ \textbf{Tavola degli accessi.} 10 per composizione, 10 per tratta. \vspace*{7pt}\\  C(OP$4_{\text{noRidondanza}}$) = $0.2 * 0.5 * (0 + 20) = 2$
+\end{itemize}
+Quindi la ridondanza comporta ad un costo operazionale minore. Tuttavia comporta ad un'occupazione di memoria aggiuntiva di \textbf{4 byte} per ogni record della tabella Linea.
+
+\subsection*{Business rules}
+\large
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|p{12cm}|}
+        \hline
+        Regole di vincolo \\
+        \hline
+        1. NumTratte, attributo di Linea, è una ridondanza concettuale \\
+        \hline
+        2. Numero, chiave primaria di Tratta, è univoca solo a livello di linea e non a livello globale \\
+        \hline
+        3. Codice, afferito a Treno, è di tipo alfanumerico di 24 caratteri massimi \\
+        \hline
+        4. Relazione Composizione, tra Stazione e Tratta, promuove una cardinalità rispetto a Tratta di [2,2], ossia Tratta associa una stazione di arrivo e una stazione di partenza, quindi non unaria \\
+        \hline
+        5. Arrivo deve essere sempre maggiore di Partenza, all'interno della relazione Fermata \\
+        \hline
+    \end{tabular}
+    \caption{Descrizione dei vincoli interpretativi del sistema ferroviario.}
+\end{table}
+
+\pagebreak
+\subsection*{Traduzione - minimizza valori NULL}
+\large
+
+\subsubsection*{Schema logico relazionale}
+Linea(\underline{Codice}, Lunghezza, DataApertura, NumTratte) \vspace*{3pt}\\
+Composizione(\underline{CodiceLinea}, \underbar{NumeroTratta}) \vspace*{3pt}\\
+Tratta(\underline{Numero}, Lunghezza, Descrizione, StazioneArrivo, StazionePartenza) \vspace*{3pt}\\
+Intervento(\underline{Codice}, Data, Priorità, Descrizione, Costo, CodiceCompagnia, NumeroTratta) \vspace*{3pt}\\
+InterventoPeriodico(\underline{CodiceIntervento}, Report, Frequenza) \vspace*{3pt}\\
+CompagniaFerroviaria(\underline{CodiceFiscale}, Nome, Sede) \vspace*{3pt}\\
+Stazione(\underline{Nome}, Regione, NumBinari) \vspace*{3pt}\\
+Foto(\underline{Codice}, File, NomeStazione) \vspace*{3pt}\\
+Treno(\underline{Codice}, NomeModello, NumVagoni, CodiceCompagnia) \vspace*{3pt}\\
+Merce(\underline{CodiceTreno}, Carico) \vspace*{3pt}\\
+Passeggero(\underline{CodiceTreno}, NumPosti, Ristorante) \vspace*{3pt}\\
+Fermata(\underline{Data}, \underline{NomeStazione}, \underline{CodiceTreno}, Arrivo, Partenza) \vspace*{3pt}\\
+Operazione(\underline{CodiceLinea}, \underline{CodiceTreno}) \vspace*{3pt}\\
+
+\subsubsection*{Vincoli di integrità referenziale}
+Composizione.CodiceLinea \textbf{-->} Linea.Codice \vspace*{3pt}\\
+Composizione.NumeroTratta \textbf{-->} Tratta.Numero \vspace*{3pt}\\
+Tratta.StazioneArrivo \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Tratta.StazionePartenza \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Intervento.CodiceCompagnia \textbf{-->} Compagnia.CodiceFiscale \vspace*{3pt}\\
+Intervento.NumeroTratta \textbf{-->} Tratta.Numero \vspace*{3pt}\\
+InterventoPeriodico.CodiceIntervento \textbf{-->} Intervento.Codice \vspace*{3pt}\\
+Foto.NomeStazione \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Treno.CodiceCompagnia \textbf{-->} CompagniaFerroviaria.CodiceFiscale \vspace*{3pt}\\
+Merce.CodiceTreno \textbf{-->} Treno.Codice \vspace*{3pt}\\
+Passeggeri.CodiceTreno \textbf{-->} Treno.Codice \vspace*{3pt}\\
+Fermata.NomeStazione \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Fermata.CodiceTreno \textbf{-->} Passeggeri.CodiceTreno \vspace*{3pt}\\
+Operazione.CodiceLinea \textbf{-->} Linea.Codice \vspace*{3pt}\\
+Operazione.CodiceTreno \textbf{-->} Merce.CodiceTreno \vspace*{3pt}\\
+
+\subsection*{Traduzione - minimizza il numero di tabelle}
+\large
+
+\subsubsection*{Schema logico relazionale}
+Linea(\underline{Codice}, Lunghezza, DataApertura, NumTratte) \vspace*{3pt}\\
+Composizione(\underline{CodiceLinea}, \underbar{NumeroTratta}) \vspace*{3pt}\\
+Tratta(\underline{Numero}, Lunghezza, Descrizione, StazioneArrivo, StazionePartenza) \vspace*{3pt}\\
+Intervento(\underline{Codice}, Data, Priorità, Descrizione, Costo, CodiceCompagnia, NumeroTratta) \vspace*{3pt}\\
+InterventoPeriodico(\underline{CodiceIntervento}, Report, Frequenza) \vspace*{3pt}\\
+CompagniaFerroviaria(\underline{CodiceFiscale}, Nome, Sede) \vspace*{3pt}\\
+Stazione(\underline{Nome}, Regione, NumBinari) \vspace*{3pt}\\
+Foto(\underline{Codice}, File, NomeStazione) \vspace*{3pt}\\
+Merce(\underline{CodiceTrenoMerce}, NomeModello. NumVagoni, Carico, CodiceCompagnia) \vspace*{3pt}\\
+Passeggero(\underline{CodiceTrenoPasseggeri}, NomeModello, NumVagoni, NumPosti, Ristorante, CodiceCompagnia) \vspace*{3pt}\\
+Fermata(\underline{Data}, \underline{NomeStazione}, \underline{CodiceTreno}, Arrivo, Partenza) \vspace*{3pt}\\
+Operazione(\underline{CodiceLinea}, \underline{CodiceTreno}) \vspace*{3pt}\\
+
+\subsubsection*{Vincoli di integrità referenziale}
+Composizione.CodiceLinea \textbf{-->} Linea.Codice \vspace*{3pt}\\
+Composizione.NumeroTratta \textbf{-->} Tratta.Numero \vspace*{3pt}\\
+Tratta.StazioneArrivo \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Tratta.StazionePartenza \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Intervento.CodiceCompagnia \textbf{-->} Compagnia.CodiceFiscale \vspace*{3pt}\\
+Intervento.NumeroTratta \textbf{-->} Tratta.Numero \vspace*{3pt}\\
+InterventoPeriodico.CodiceIntervento \textbf{-->} Intervento.Codice \vspace*{3pt}\\
+Passeggeri.CodiceCompagnia \textbf{-->} CompagniaFerroviaria.CodiceFiscale \vspace*{3pt}\\
+Merce.CodiceCompagnia \textbf{-->} CompagniaFerroviaria.CodiceFiscale \vspace*{3pt}\\
+Foto.NomeStazione \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Fermata.NomeStazione \textbf{-->} Stazione.Nome \vspace*{3pt}\\
+Fermata.CodiceTreno \textbf{-->} Passeggeri.CodiceTrenoPasseggeri \vspace*{3pt}\\
+Operazione.CodiceLinea \textbf{-->} Linea.Codice \vspace*{3pt}\\
+Operazione.CodiceTreno \textbf{-->} Merce.CodiceTrenoMerce \vspace*{3pt}\\
+
 \end{document}
